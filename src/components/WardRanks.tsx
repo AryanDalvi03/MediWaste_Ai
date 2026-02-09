@@ -10,37 +10,38 @@ const ranks = [
 
 const WardRanks = () => (
   <div className="max-w-4xl mx-auto space-y-8 animate-slide-up pb-12">
-    <header className="gradient-teal p-12 rounded-3xl text-primary-foreground relative overflow-hidden shadow-xl">
+    <header className="glass-card neon-glow p-12 rounded-3xl relative overflow-hidden">
+      <div className="absolute inset-0 gradient-hero" />
       <div className="relative z-10">
-        <h2 className="text-5xl font-extrabold tracking-tight">WARD CHAMPIONS</h2>
-        <p className="text-primary-foreground/70 mt-2 max-w-sm text-sm">Live leaderboard of segregation accuracy per hospital department.</p>
+        <h2 className="text-5xl font-extrabold tracking-tight text-foreground neon-text">WARD CHAMPIONS</h2>
+        <p className="text-muted-foreground mt-2 max-w-sm text-sm">Live leaderboard of segregation accuracy per hospital department.</p>
       </div>
-      <Trophy className="w-64 h-64 absolute -right-12 -bottom-12 opacity-10" />
+      <Trophy className="w-64 h-64 absolute -right-12 -bottom-12 text-primary opacity-[0.06]" />
     </header>
 
-    <div className="bg-card rounded-2xl border border-border shadow-sm divide-y divide-border">
+    <div className="glass-card rounded-2xl divide-y divide-border/20">
       {ranks.map((r, i) => (
         <motion.div
           key={r.name}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.1 }}
-          className="p-8 flex justify-between items-center hover:bg-muted/30 transition-all group"
+          className="p-8 flex justify-between items-center hover:bg-muted/10 transition-all group"
         >
           <div className="flex items-center gap-5">
-            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-extrabold text-xl group-hover:scale-110 transition-transform ${
-              r.position === 1 ? 'bg-warning-light text-warning-foreground' : r.position === 2 ? 'bg-muted text-muted-foreground' : 'bg-muted text-muted-foreground'
-            }`}>
+            <div className={`w-14 h-14 rounded-2xl flex items-center justify-center font-display font-extrabold text-xl group-hover:scale-110 transition-transform ${
+              r.position === 1 ? 'bg-warning-light/50 text-warning-foreground neon-glow-sm' : 'glass-card text-muted-foreground'
+            }`} style={r.position === 1 ? { border: '1px solid hsla(38,92%,50%,0.3)', boxShadow: '0 0 12px hsla(38,92%,50%,0.2)' } : undefined}>
               {r.position}
             </div>
             <div>
               <p className="font-extrabold text-2xl text-foreground tracking-tight">{r.name}</p>
-              <p className="text-xs font-bold text-primary uppercase tracking-wider mt-1">{r.trend} PERFORMANCE</p>
+              <p className="text-[10px] font-display font-bold text-primary uppercase tracking-widest mt-1 neon-text-subtle">{r.trend} PERFORMANCE</p>
             </div>
           </div>
           <div className="text-right">
             <span className="block text-3xl font-extrabold text-foreground tracking-tight">{r.score}%</span>
-            <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Accuracy</span>
+            <span className="text-[10px] font-display font-bold text-muted-foreground uppercase tracking-widest">Accuracy</span>
           </div>
         </motion.div>
       ))}
