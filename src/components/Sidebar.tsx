@@ -34,33 +34,33 @@ const Sidebar = () => {
 
   return (
     <aside
-      className={`hidden lg:flex flex-col h-screen sticky top-0 border-r border-border bg-sidebar transition-all duration-300 ${sidebarCollapsed ? 'w-20' : 'w-72'} p-4`}
+      className={`hidden lg:flex flex-col h-screen sticky top-0 glass-sidebar transition-all duration-500 ${sidebarCollapsed ? 'w-20' : 'w-72'} p-4`}
     >
       {/* Logo */}
       <div className="flex items-center justify-between mb-8 px-2">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="gradient-teal p-2 rounded-xl shrink-0">
+          <div className="gradient-teal p-2 rounded-xl shrink-0 neon-glow-sm">
             <ShieldCheck className="w-5 h-5 text-primary-foreground" />
           </div>
           {!sidebarCollapsed && (
-            <h1 className="font-extrabold text-lg tracking-tight text-foreground whitespace-nowrap">
-              MediWaste <span className="text-gradient-teal">AI</span>
+            <h1 className="font-display font-extrabold text-sm tracking-wider text-foreground whitespace-nowrap">
+              MEDI<span className="text-gradient-teal">WASTE</span>
             </h1>
           )}
         </div>
-        <button onClick={toggleSidebar} className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground transition-colors shrink-0">
+        <button onClick={toggleSidebar} className="p-1.5 rounded-lg hover:bg-muted/50 text-muted-foreground transition-colors shrink-0">
           {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="space-y-1.5 flex-1 overflow-y-auto custom-scrollbar">
+      <nav className="space-y-1 flex-1 overflow-y-auto custom-scrollbar">
         {navItems.map((item) => (
           <NavButton key={item.id} item={item} active={activeTab === item.id} onClick={() => setTab(item.id)} collapsed={sidebarCollapsed} />
         ))}
         {showHospital && (
           <>
-            <div className="my-3 border-t border-border" />
+            <div className="my-3 border-t border-border/30" />
             {hospitalItems.map((item) => (
               <NavButton key={item.id} item={item} active={activeTab === item.id} onClick={() => setTab(item.id)} collapsed={sidebarCollapsed} />
             ))}
@@ -72,21 +72,21 @@ const Sidebar = () => {
       <div className="space-y-3 pt-4">
         <button
           onClick={() => {}}
-          className={`w-full bg-destructive text-destructive-foreground rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-lg hover:opacity-90 transition-opacity ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4 justify-center'}`}
+          className={`w-full bg-destructive/80 text-destructive-foreground rounded-xl font-display font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 neon-hazard hover:bg-destructive transition-all ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4 justify-center'}`}
         >
           <Zap className="w-4 h-4 shrink-0" />
           {!sidebarCollapsed && <span>SOS Protocol</span>}
         </button>
         <button
           onClick={handleLogout}
-          className={`w-full rounded-xl text-muted-foreground hover:text-destructive hover:bg-hazard-light transition-all flex items-center gap-2 text-sm font-semibold ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4'}`}
+          className={`w-full rounded-xl text-muted-foreground hover:text-hazard hover:bg-hazard-light/30 transition-all flex items-center gap-2 text-sm font-semibold ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4'}`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
           {!sidebarCollapsed && <span>Logout</span>}
         </button>
-        <div className={`p-3 bg-muted rounded-xl flex items-center gap-2 ${sidebarCollapsed ? 'justify-center' : ''}`}>
-          <div className="w-2 h-2 rounded-full bg-safe animate-pulse" />
-          {!sidebarCollapsed && <span className="text-xs font-mono text-muted-foreground uppercase">Cloud Active</span>}
+        <div className={`p-3 glass-card rounded-xl flex items-center gap-2 ${sidebarCollapsed ? 'justify-center' : ''}`}>
+          <div className="w-2 h-2 rounded-full bg-safe neon-dot animate-pulse" />
+          {!sidebarCollapsed && <span className="text-[10px] font-display font-medium text-muted-foreground uppercase tracking-widest">Cloud Active</span>}
         </div>
       </div>
     </aside>
@@ -104,13 +104,13 @@ const NavButton = ({ item, active, onClick, collapsed }: NavButtonProps) => (
   <motion.button
     whileTap={{ scale: 0.97 }}
     onClick={onClick}
-    className={`w-full flex items-center gap-3 rounded-xl transition-all duration-200 font-semibold text-sm ${collapsed ? 'p-3 justify-center' : 'p-3 px-4'} ${
+    className={`w-full flex items-center gap-3 rounded-xl transition-all duration-300 font-semibold text-sm ${collapsed ? 'p-3 justify-center' : 'p-3 px-4'} ${
       active
-        ? 'gradient-teal text-primary-foreground shadow-md'
-        : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+        ? 'gradient-teal text-primary-foreground neon-glow-sm'
+        : 'text-sidebar-foreground hover:bg-muted/30 hover:text-primary'
     }`}
   >
-    <item.icon className="w-5 h-5 shrink-0" />
+    <item.icon className={`w-5 h-5 shrink-0 ${active ? '' : 'opacity-60'}`} />
     {!collapsed && <span>{item.label}</span>}
   </motion.button>
 );

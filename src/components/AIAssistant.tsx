@@ -35,18 +35,18 @@ const AIAssistant = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto animate-slide-up h-[calc(100vh-10rem)] flex flex-col bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-      <div className="gradient-dark text-primary-foreground p-6 flex items-center gap-4 shrink-0">
-        <div className="gradient-teal p-2.5 rounded-xl">
-          <Bot className="w-5 h-5" />
+    <div className="max-w-3xl mx-auto animate-slide-up h-[calc(100vh-10rem)] flex flex-col glass-card rounded-2xl overflow-hidden neon-border">
+      <div className="p-6 flex items-center gap-4 shrink-0 border-b border-border/20" style={{ background: 'hsla(220,20%,10%,0.8)' }}>
+        <div className="gradient-teal p-2.5 rounded-xl neon-glow-sm">
+          <Bot className="w-5 h-5 text-primary-foreground" />
         </div>
         <div>
-          <h3 className="font-extrabold text-lg tracking-tight">Compliance Assistant</h3>
-          <p className="text-xs font-bold text-primary/80 uppercase tracking-wider mt-0.5">Neural Knowledge Engine v4.0</p>
+          <h3 className="font-extrabold text-lg tracking-tight text-foreground">Compliance Assistant</h3>
+          <p className="text-[10px] font-display font-bold text-primary/80 uppercase tracking-widest mt-0.5 neon-text-subtle">Neural Knowledge Engine v4.0</p>
         </div>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto space-y-4 bg-muted/20 custom-scrollbar">
+      <div className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-radial-glow">
         {messages.map((m, i) => (
           <motion.div
             key={i}
@@ -54,10 +54,10 @@ const AIAssistant = () => {
             animate={{ opacity: 1, y: 0 }}
             className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium shadow-sm ${
+            <div className={`max-w-[80%] p-4 rounded-2xl text-sm font-medium ${
               m.role === 'user'
-                ? 'gradient-teal text-primary-foreground rounded-tr-sm'
-                : 'bg-card text-foreground rounded-tl-sm border border-border'
+                ? 'gradient-teal text-primary-foreground rounded-tr-sm neon-glow-sm'
+                : 'glass-card text-foreground rounded-tl-sm'
             }`}>
               {m.text}
             </div>
@@ -66,14 +66,14 @@ const AIAssistant = () => {
         <div ref={bottomRef} />
       </div>
 
-      <form onSubmit={handleSend} className="p-4 bg-card border-t border-border flex gap-3 shrink-0">
+      <form onSubmit={handleSend} className="p-4 border-t border-border/20 flex gap-3 shrink-0" style={{ background: 'hsla(220,20%,10%,0.6)' }}>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Query clinical protocols or safety manuals..."
-          className="flex-1 bg-muted/50 border border-border rounded-xl px-5 py-3 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 text-foreground"
+          className="flex-1 glass-input rounded-xl px-5 py-3 text-sm font-medium focus:outline-none text-foreground placeholder:text-muted-foreground/50"
         />
-        <button type="submit" className="gradient-teal text-primary-foreground p-3 rounded-xl shadow-lg hover:opacity-90 transition-opacity">
+        <button type="submit" className="gradient-teal text-primary-foreground p-3 rounded-xl neon-glow-sm hover:neon-glow transition-all">
           <Send className="w-5 h-5" />
         </button>
       </form>
