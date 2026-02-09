@@ -33,9 +33,9 @@ const Index = () => {
   if (!isAuthenticated) return <Navigate to="/auth" replace />;
 
   return (
-    <div className="min-h-screen flex h-screen overflow-hidden bg-background">
+    <div className="min-h-screen flex h-screen overflow-hidden bg-background bg-grid bg-orb-teal">
       <Sidebar />
-      <main className="flex-1 p-6 lg:p-10 overflow-y-auto custom-scrollbar">
+      <main className="flex-1 p-6 lg:p-10 overflow-y-auto custom-scrollbar bg-radial-glow">
         <ActiveComponent />
       </main>
       <MobileNav />

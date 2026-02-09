@@ -37,27 +37,27 @@ const AIScanner = () => {
   return (
     <div className="max-w-2xl mx-auto space-y-8 animate-slide-up text-center pb-12">
       <div className="space-y-3">
-        <span className="inline-block px-4 py-1.5 rounded-full bg-secondary text-secondary-foreground text-xs font-bold uppercase tracking-wider">
+        <span className="inline-block px-4 py-1.5 rounded-full glass-card neon-border text-primary text-xs font-display font-bold uppercase tracking-widest">
           Neural Vision Pipeline
         </span>
-        <h2 className="text-4xl font-extrabold tracking-tight text-foreground">Waste Inspector</h2>
+        <h2 className="text-4xl font-extrabold tracking-tight text-foreground neon-text-subtle">Waste Inspector</h2>
       </div>
 
       <div
         onClick={() => fileRef.current?.click()}
-        className="rounded-3xl border-2 border-dashed border-border hover:border-primary/50 p-4 cursor-pointer transition-all group"
+        className="rounded-3xl glass-card-hover p-4 cursor-pointer transition-all group animate-border-glow"
       >
         <input ref={fileRef} type="file" hidden accept="image/*" onChange={handleFile} />
         {!preview ? (
-          <div className="py-20 bg-muted/30 rounded-2xl">
-            <div className="w-20 h-20 bg-card shadow-lg rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary group-hover:shadow-xl transition-shadow">
-              <Camera className="w-10 h-10" />
+          <div className="py-20 rounded-2xl gradient-neon">
+            <div className="w-20 h-20 glass-card neon-glow rounded-2xl flex items-center justify-center mx-auto mb-6 text-primary group-hover:neon-glow transition-all animate-float">
+              <Camera className="w-10 h-10 opacity-70" />
             </div>
             <p className="text-xl font-bold text-foreground">Capture Artifact</p>
-            <p className="text-muted-foreground text-sm mt-1 uppercase tracking-wider">Real-time classification standby</p>
+            <p className="text-muted-foreground text-xs mt-1 font-display uppercase tracking-widest">Real-time classification standby</p>
           </div>
         ) : (
-          <div className="rounded-2xl overflow-hidden bg-card">
+          <div className="rounded-2xl overflow-hidden">
             <img src={preview} alt="Scan preview" className="max-h-72 mx-auto rounded-2xl" />
           </div>
         )}
@@ -69,10 +69,10 @@ const AIScanner = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="gradient-dark text-primary-foreground rounded-2xl p-10 space-y-4"
+            className="glass-card neon-border rounded-2xl p-10 space-y-4"
           >
-            <Loader2 className="w-10 h-10 animate-spin text-primary mx-auto" />
-            <p className="font-bold text-xs uppercase tracking-widest text-primary">Extracting CNN Features...</p>
+            <Loader2 className="w-10 h-10 animate-spin text-primary neon-text-subtle mx-auto" />
+            <p className="font-display font-bold text-xs uppercase tracking-widest text-primary neon-text-subtle">Extracting CNN Features...</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -82,29 +82,29 @@ const AIScanner = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-2xl shadow-lg overflow-hidden border border-border text-left"
+            className="rounded-2xl overflow-hidden glass-card text-left"
           >
-            <div className={`p-8 ${info.hazardous ? 'bg-hazard' : 'bg-safe'} text-primary-foreground`}>
-              <h3 className="text-3xl font-extrabold tracking-tight">{result.type}</h3>
-              <p className="text-sm font-bold opacity-80 uppercase tracking-wider mt-1">Inference: {result.confidence}% Confidence</p>
+            <div className={`p-8 ${info.hazardous ? 'bg-hazard/80 neon-hazard' : 'bg-safe/80 neon-glow-sm'}`}>
+              <h3 className="text-3xl font-extrabold tracking-tight text-foreground">{result.type}</h3>
+              <p className="text-sm font-display font-bold opacity-80 uppercase tracking-widest mt-1 text-foreground/80">Inference: {result.confidence}% Confidence</p>
             </div>
-            <div className="p-8 space-y-5 bg-card">
+            <div className="p-8 space-y-5">
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-muted/50 rounded-xl border border-border">
-                  <p className="text-xs font-bold text-muted-foreground uppercase">Bin Location</p>
+                <div className="p-4 glass-card rounded-xl">
+                  <p className="text-[10px] font-display font-bold text-muted-foreground uppercase tracking-widest">Bin Location</p>
                   <p className="font-bold text-foreground mt-1">{info.bin}</p>
                 </div>
-                <div className={`p-4 rounded-xl border ${info.hazardous ? 'bg-hazard-light border-hazard/20' : 'bg-safe-light border-safe/20'}`}>
-                  <p className={`text-xs font-bold uppercase ${info.hazardous ? 'text-hazard' : 'text-safe'}`}>Classification</p>
+                <div className={`p-4 rounded-xl ${info.hazardous ? 'bg-hazard-light/50 neon-hazard' : 'bg-safe-light/50 neon-glow-sm'}`} style={{ border: `1px solid ${info.hazardous ? 'hsla(0,72%,55%,0.3)' : 'hsla(160,65%,45%,0.3)'}` }}>
+                  <p className={`text-[10px] font-display font-bold uppercase tracking-widest ${info.hazardous ? 'text-hazard-foreground' : 'text-safe-foreground'}`}>Classification</p>
                   <p className={`font-bold mt-1 ${info.hazardous ? 'text-hazard-foreground' : 'text-safe-foreground'}`}>
                     {info.hazardous ? 'HAZARDOUS' : 'CLEAN'}
                   </p>
                 </div>
               </div>
-              <p className="text-sm text-muted-foreground border-l-4 border-primary pl-4 italic">"{info.instruction}"</p>
+              <p className="text-sm text-muted-foreground border-l-2 border-primary/40 pl-4 italic">"{info.instruction}"</p>
               <button
                 onClick={() => setTab('dashboard')}
-                className="w-full gradient-dark text-primary-foreground py-4 rounded-xl font-bold shadow-lg hover:opacity-90 transition-opacity"
+                className="w-full gradient-teal text-primary-foreground py-4 rounded-xl font-display font-bold text-xs tracking-widest uppercase neon-glow-sm hover:neon-glow transition-all"
               >
                 COMPLETE & LOG TO CLOUD
               </button>
