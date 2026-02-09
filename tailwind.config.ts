@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['"Orbitron"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -86,6 +87,12 @@ export default {
         surface: {
           DEFAULT: "hsl(var(--surface))",
           raised: "hsl(var(--surface-raised))",
+        },
+        neon: {
+          teal: "hsl(var(--neon-teal))",
+          cyan: "hsl(var(--neon-cyan))",
+          purple: "hsl(var(--neon-purple))",
+          pink: "hsl(var(--neon-pink))",
         },
       },
       borderRadius: {
