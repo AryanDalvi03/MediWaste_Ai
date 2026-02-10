@@ -62,14 +62,35 @@ const AuthPage = () => {
             ]).map((item) => (
               <motion.button
                 key={item.role}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => handleRoleSelect(item.role)}
-                className="w-full p-6 rounded-2xl glass-card-hover text-left group"
+                className="w-full p-6 rounded-2xl text-left group relative overflow-hidden"
+                style={{
+                  background: 'hsla(220, 20%, 12%, 0.4)',
+                  backdropFilter: 'blur(32px) saturate(200%)',
+                  WebkitBackdropFilter: 'blur(32px) saturate(200%)',
+                  border: '1px solid hsla(174, 80%, 48%, 0.15)',
+                  boxShadow: '0 0 0 1px hsla(174, 80%, 48%, 0.05), 0 8px 32px hsla(220, 25%, 0%, 0.3), inset 0 1px 0 hsla(180, 20%, 92%, 0.06)',
+                  transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = 'hsla(174, 80%, 48%, 0.4)';
+                  e.currentTarget.style.boxShadow = '0 0 30px hsla(174, 80%, 48%, 0.2), 0 0 60px hsla(174, 80%, 48%, 0.08), 0 8px 32px hsla(220, 25%, 0%, 0.4), inset 0 1px 0 hsla(180, 20%, 92%, 0.1)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = 'hsla(174, 80%, 48%, 0.15)';
+                  e.currentTarget.style.boxShadow = '0 0 0 1px hsla(174, 80%, 48%, 0.05), 0 8px 32px hsla(220, 25%, 0%, 0.3), inset 0 1px 0 hsla(180, 20%, 92%, 0.06)';
+                }}
               >
-                <div className="flex items-start gap-4">
-                  <div className="p-2.5 rounded-xl glass-card neon-glow-sm group-hover:neon-glow transition-all">
-                    <item.Icon className="w-6 h-6 text-primary opacity-80" />
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'linear-gradient(135deg, hsla(174, 80%, 48%, 0.08), hsla(188, 70%, 50%, 0.04), transparent)' }} />
+                <div className="flex items-start gap-4 relative z-10">
+                  <div className="p-2.5 rounded-xl neon-glow-sm group-hover:neon-glow transition-all" style={{
+                    background: 'hsla(174, 80%, 48%, 0.08)',
+                    backdropFilter: 'blur(12px)',
+                    border: '1px solid hsla(174, 80%, 48%, 0.2)',
+                  }}>
+                    <item.Icon className="w-6 h-6 text-primary opacity-80 group-hover:opacity-100 transition-opacity" />
                   </div>
                   <div>
                     <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
