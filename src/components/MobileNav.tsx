@@ -1,7 +1,7 @@
 import { LayoutDashboard, Camera, History, Trophy, MessageSquare, Leaf } from 'lucide-react';
-import { useNav } from '@/lib/store';
+import { useNav, useAuth } from '@/lib/store';
 
-const items = [
+const allItems = [
   { id: 'dashboard' as const, icon: LayoutDashboard, label: 'Home' },
   { id: 'scanner' as const, icon: Camera, label: 'Scan' },
   { id: 'audit' as const, icon: History, label: 'Audit' },
@@ -12,6 +12,11 @@ const items = [
 
 const MobileNav = () => {
   const { activeTab, setTab } = useNav();
+  const { user } = useAuth();
+  const items = allItems.filter((item) => {
+    if (item.id === 'ranks' && user?.role === 'common') return false;
+    return true;
+  });
 
   return (
     <nav className="lg:hidden fixed bottom-0 left-0 right-0 px-2 py-2 flex justify-around z-50" style={{

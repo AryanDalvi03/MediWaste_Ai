@@ -1,9 +1,9 @@
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Camera, History, Trophy, MessageSquare, Leaf,
-  Users, ClipboardCheck, Building2, LogOut, Zap, ChevronLeft, ChevronRight, ShieldCheck
+  Users, ClipboardCheck, Building2, LogOut, Zap, ChevronLeft, ChevronRight, ShieldCheck, Sun, Moon
 } from 'lucide-react';
-import { useNav, useAuth } from '@/lib/store';
+import { useNav, useAuth, useTheme } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
 
 const navItems = [
@@ -24,8 +24,23 @@ const hospitalItems = [
 const Sidebar = () => {
   const { activeTab, setTab, sidebarCollapsed, toggleSidebar } = useNav();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  const showHospital = user?.role === 'audit_manager' || user?.role === 'hospital_staff';
+  const role = user?.role;
+
+  // Filter nav items based on role
+  const filteredNavItems = navItems.filter((item) => {
+    if (item.id === 'ranks' && role === 'common') return false;
+    return true;
+  });
+
+  const showHospital = role === 'audit_manager' || role === 'hospital_staff';
+  
+  // Hospital staff gets restricted items
+  const filteredHospitalItems = hospitalItems.filter((item) => {
+    if (role === 'hospital_staff' && (item.id === 'compliance' || item.id === 'facility')) return false;
+    return true;
+  });
 
   const handleLogout = () => {
     logout();
@@ -55,13 +70,13 @@ const Sidebar = () => {
 
       {/* Nav */}
       <nav className="space-y-1 flex-1 overflow-y-auto custom-scrollbar">
-        {navItems.map((item) => (
+        {filteredNavItems.map((item) => (
           <NavButton key={item.id} item={item} active={activeTab === item.id} onClick={() => setTab(item.id)} collapsed={sidebarCollapsed} />
         ))}
         {showHospital && (
           <>
             <div className="my-3 border-t border-border/30" />
-            {hospitalItems.map((item) => (
+            {filteredHospitalItems.map((item) => (
               <NavButton key={item.id} item={item} active={activeTab === item.id} onClick={() => setTab(item.id)} collapsed={sidebarCollapsed} />
             ))}
           </>
@@ -70,6 +85,14 @@ const Sidebar = () => {
 
       {/* Footer */}
       <div className="space-y-3 pt-4">
+        {/* Theme toggle */}
+        <button
+          onClick={toggleTheme}
+          className={`w-full rounded-xl text-muted-foreground hover:text-primary hover:bg-muted/30 transition-all flex items-center gap-2 text-sm font-semibold ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4'}`}
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4 shrink-0" /> : <Moon className="w-4 h-4 shrink-0" />}
+          {!sidebarCollapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
+        </button>
         <button
           onClick={() => {}}
           className={`w-full bg-destructive/80 text-destructive-foreground rounded-xl font-display font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 neon-hazard hover:bg-destructive transition-all ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4 justify-center'}`}
