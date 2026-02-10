@@ -67,20 +67,22 @@ const AuthPage = () => {
                 onClick={() => handleRoleSelect(item.role)}
                 className="w-full p-6 rounded-2xl text-left group relative overflow-hidden"
                 style={{
-                  background: 'hsla(220, 20%, 12%, 0.4)',
+                  background: 'hsla(174, 80%, 48%, 0.05)',
                   backdropFilter: 'blur(32px) saturate(200%)',
                   WebkitBackdropFilter: 'blur(32px) saturate(200%)',
-                  border: '1px solid hsla(174, 80%, 48%, 0.15)',
-                  boxShadow: '0 0 0 1px hsla(174, 80%, 48%, 0.05), 0 8px 32px hsla(220, 25%, 0%, 0.3), inset 0 1px 0 hsla(180, 20%, 92%, 0.06)',
+                  border: '1px solid hsla(174, 80%, 48%, 0.18)',
+                  boxShadow: 'inset 0 1px 0 hsla(180, 20%, 92%, 0.08)',
                   transition: 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
                 }}
                 onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'hsla(174, 80%, 48%, 0.1)';
                   e.currentTarget.style.borderColor = 'hsla(174, 80%, 48%, 0.4)';
-                  e.currentTarget.style.boxShadow = '0 0 30px hsla(174, 80%, 48%, 0.2), 0 0 60px hsla(174, 80%, 48%, 0.08), 0 8px 32px hsla(220, 25%, 0%, 0.4), inset 0 1px 0 hsla(180, 20%, 92%, 0.1)';
+                  e.currentTarget.style.boxShadow = '0 0 25px hsla(174, 80%, 48%, 0.15), inset 0 1px 0 hsla(180, 20%, 92%, 0.12)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'hsla(174, 80%, 48%, 0.15)';
-                  e.currentTarget.style.boxShadow = '0 0 0 1px hsla(174, 80%, 48%, 0.05), 0 8px 32px hsla(220, 25%, 0%, 0.3), inset 0 1px 0 hsla(180, 20%, 92%, 0.06)';
+                  e.currentTarget.style.background = 'hsla(174, 80%, 48%, 0.05)';
+                  e.currentTarget.style.borderColor = 'hsla(174, 80%, 48%, 0.18)';
+                  e.currentTarget.style.boxShadow = 'inset 0 1px 0 hsla(180, 20%, 92%, 0.08)';
                 }}
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500" style={{ background: 'linear-gradient(135deg, hsla(174, 80%, 48%, 0.08), hsla(188, 70%, 50%, 0.04), transparent)' }} />
