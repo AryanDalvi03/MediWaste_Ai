@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShieldCheck, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, Eye, EyeOff, Shield, Building2, Leaf } from 'lucide-react';
 import { useAuth } from '@/lib/store';
 import { UserRole } from '@/lib/protocols';
 import { Button } from '@/components/ui/button';
@@ -56,9 +56,9 @@ const AuthPage = () => {
 
           <div className="space-y-4">
             {([
-              { role: 'audit_manager' as UserRole, title: 'Audit Manager', desc: 'Full access to compliance reports, team analytics, and facility settings', icon: '🛡️' },
-              { role: 'hospital_staff' as UserRole, title: 'Hospital Staff', desc: 'Access to scanner, audit logs, ward rankings, and AI assistant', icon: '🏥' },
-              { role: 'common' as UserRole, title: 'Common', desc: 'Basic access to waste scanner and environmental impact data', icon: '🌿' },
+              { role: 'audit_manager' as UserRole, title: 'Audit Manager', desc: 'Full access to compliance reports, team analytics, and facility settings', Icon: Shield },
+              { role: 'hospital_staff' as UserRole, title: 'Hospital Staff', desc: 'Access to scanner, audit logs, ward rankings, and AI assistant', Icon: Building2 },
+              { role: 'common' as UserRole, title: 'Common', desc: 'Basic access to waste scanner and environmental impact data', Icon: Leaf },
             ]).map((item) => (
               <motion.button
                 key={item.role}
@@ -68,7 +68,9 @@ const AuthPage = () => {
                 className="w-full p-6 rounded-2xl glass-card-hover text-left group"
               >
                 <div className="flex items-start gap-4">
-                  <span className="text-3xl">{item.icon}</span>
+                  <div className="p-2.5 rounded-xl glass-card neon-glow-sm group-hover:neon-glow transition-all">
+                    <item.Icon className="w-6 h-6 text-primary opacity-80" />
+                  </div>
                   <div>
                     <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors">{item.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1">{item.desc}</p>
