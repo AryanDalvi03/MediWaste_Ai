@@ -1,8 +1,8 @@
 const TeamAnalytics = () => {
   const staff = [
-    { name: 'Dr. Sarah Johnson', ward: 'Radiology Ward', accuracy: 98.5, items: 342, rank: 1 },
-    { name: 'Dr. Ahmed Hassan', ward: 'Surgery Ward', accuracy: 97.2, items: 428, rank: 2 },
-    { name: 'Nurse Patricia Lee', ward: 'ICU Ward', accuracy: 96.8, items: 567, rank: 3 },
+    { name: 'Sarah Johnson', ward: 'Radiology Ward', accuracy: 98.5, items: 342, rank: 1, role: 'Waste Handling Supervisor' },
+    { name: 'Ahmed Hassan', ward: 'Surgery Ward', accuracy: 97.2, items: 428, rank: 2, role: 'Waste Disposal Coordinator' },
+    { name: 'Patricia Lee', ward: 'ICU Ward', accuracy: 96.8, items: 567, rank: 3, role: 'Waste Segregation Officer' },
   ];
 
   return (
@@ -30,7 +30,7 @@ const TeamAnalytics = () => {
                 }`} style={s.rank === 1 ? { border: '1px solid hsla(38,92%,50%,0.3)' } : undefined}>{s.rank}</div>
                 <div>
                   <p className="font-semibold text-sm text-foreground">{s.name}</p>
-                  <p className="text-xs text-muted-foreground">{s.ward}</p>
+                  <p className="text-xs text-muted-foreground">{s.role} · {s.ward}</p>
                 </div>
               </div>
               <div className="text-right">

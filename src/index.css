@@ -70,6 +70,65 @@
     --neon-purple: 270 100% 65%;
     --neon-pink: 330 100% 60%;
   }
+
+  .light {
+    --background: 210 20% 96%;
+    --foreground: 220 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 15%;
+
+    --primary: 174 80% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 15% 90%;
+    --secondary-foreground: 174 60% 30%;
+
+    --muted: 210 15% 92%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 210 15% 90%;
+    --accent-foreground: 174 60% 30%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 15% 85%;
+    --input: 210 15% 85%;
+    --ring: 174 80% 38%;
+
+    --sidebar-background: 210 20% 98%;
+    --sidebar-foreground: 220 10% 40%;
+    --sidebar-primary: 174 80% 38%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 15% 92%;
+    --sidebar-accent-foreground: 174 60% 30%;
+    --sidebar-border: 210 15% 88%;
+    --sidebar-ring: 174 80% 38%;
+
+    --teal: 174 80% 38%;
+    --teal-light: 174 45% 90%;
+    --cyan: 188 70% 42%;
+    --hazard: 0 72% 50%;
+    --hazard-light: 0 40% 92%;
+    --hazard-foreground: 0 72% 45%;
+    --safe: 160 65% 38%;
+    --safe-light: 160 35% 90%;
+    --safe-foreground: 160 65% 35%;
+    --warning: 38 92% 45%;
+    --warning-light: 38 50% 90%;
+    --warning-foreground: 38 80% 40%;
+    --surface: 210 15% 95%;
+    --surface-raised: 0 0% 100%;
+
+    --neon-teal: 174 80% 38%;
+    --neon-cyan: 188 80% 42%;
+    --neon-purple: 270 60% 55%;
+    --neon-pink: 330 60% 50%;
+  }
 }
 
 @layer base {
@@ -96,6 +155,15 @@
       inset 0 1px 0 hsla(180, 20%, 92%, 0.05);
   }
 
+  .light .glass-card {
+    background: hsla(210, 20%, 100%, 0.7);
+    border: 1px solid hsla(174, 80%, 38%, 0.15);
+    box-shadow: 
+      0 0 0 1px hsla(174, 80%, 38%, 0.05),
+      0 8px 32px hsla(220, 25%, 50%, 0.1),
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.5);
+  }
+
   .glass-card-hover {
     background: hsla(220, 20%, 12%, 0.6);
     backdrop-filter: blur(24px) saturate(180%);
@@ -108,6 +176,15 @@
     transition: all 0.3s ease;
   }
 
+  .light .glass-card-hover {
+    background: hsla(210, 20%, 100%, 0.7);
+    border: 1px solid hsla(174, 80%, 38%, 0.15);
+    box-shadow: 
+      0 0 0 1px hsla(174, 80%, 38%, 0.05),
+      0 8px 32px hsla(220, 25%, 50%, 0.1),
+      inset 0 1px 0 hsla(0, 0%, 100%, 0.5);
+  }
+
   .glass-card-hover:hover {
     border-color: hsla(174, 80%, 48%, 0.3);
     box-shadow: 
@@ -117,11 +194,23 @@
       inset 0 1px 0 hsla(180, 20%, 92%, 0.08);
   }
 
+  .light .glass-card-hover:hover {
+    border-color: hsla(174, 80%, 38%, 0.35);
+    box-shadow: 
+      0 0 20px hsla(174, 80%, 38%, 0.1),
+      0 8px 32px hsla(220, 25%, 50%, 0.15);
+  }
+
   .glass-sidebar {
     background: hsla(220, 20%, 8%, 0.85);
     backdrop-filter: blur(32px) saturate(200%);
     -webkit-backdrop-filter: blur(32px) saturate(200%);
     border-right: 1px solid hsla(174, 80%, 48%, 0.08);
+  }
+
+  .light .glass-sidebar {
+    background: hsla(210, 20%, 98%, 0.9);
+    border-right: 1px solid hsla(174, 80%, 38%, 0.12);
   }
 
   .glass-input {

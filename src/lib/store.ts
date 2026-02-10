@@ -51,3 +51,23 @@ export const useNav = create<NavState>((set) => ({
   setTab: (tab) => set({ activeTab: tab }),
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 }));
+
+interface ThemeState {
+  theme: 'dark' | 'light';
+  toggleTheme: () => void;
+}
+
+export const useTheme = create<ThemeState>((set) => {
+  const stored = localStorage.getItem('mediwaste_theme') as 'dark' | 'light' | null;
+  const theme = stored || 'dark';
+  document.documentElement.classList.toggle('light', theme === 'light');
+  return {
+    theme,
+    toggleTheme: () => set((s) => {
+      const next = s.theme === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('mediwaste_theme', next);
+      document.documentElement.classList.toggle('light', next === 'light');
+      return { theme: next };
+    }),
+  };
+});
