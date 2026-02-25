@@ -1,24 +1,45 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# Dependencies
+node_modules/
+frontend/node_modules/
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment
+.env
+.env.local
+__pycache__/
+*.pyc
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Build output
+frontend/dist/
+frontend/build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Python virtual env
+venv/
+.venv/
+
+# Logs
+*.log
+debug.log
+engine_test.log
+server_log.txt
+crash.txt
+git_status.txt
+
+# Large model files (download separately — see README)
+*.keras
+*.joblib
+
+# Dataset (too large for git)
+backend/dataset/
+
+# Temporary test files
+backend/*.log
+backend/*.txt
+!backend/requirements.txt
