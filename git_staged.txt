@@ -1,0 +1,107 @@
+﻿M  .gitignore
+A  backend/app.py
+A  backend/efficientnet_finetuned_model.keras
+A  backend/mediwaste_inference_7364.py
+A  backend/requirements.txt
+A  backend/retrain_improved.py
+A  backend/rf_finetuned_features_classifier1.joblib
+A  backend/rf_finetuned_features_scaler1.joblib
+A  frontend/.gitignore
+R  README.md -> frontend/README.md
+R  bun.lockb -> frontend/bun.lockb
+R  components.json -> frontend/components.json
+R  eslint.config.js -> frontend/eslint.config.js
+R  index.html -> frontend/index.html
+R  package-lock.json -> frontend/package-lock.json
+R  package.json -> frontend/package.json
+R  postcss.config.js -> frontend/postcss.config.js
+A  frontend/public/favicon.ico
+A  frontend/public/logo.png
+R  public/placeholder.svg -> frontend/public/placeholder.svg
+R  public/robots.txt -> frontend/public/robots.txt
+R  src/App.css -> frontend/src/App.css
+R  src/App.tsx -> frontend/src/App.tsx
+R  src/components/AIAssistant.tsx -> frontend/src/components/AIAssistant.tsx
+A  frontend/src/components/AIScanner.tsx
+R  src/components/AuditManifest.tsx -> frontend/src/components/AuditManifest.tsx
+R  src/components/ComplianceReports.tsx -> frontend/src/components/ComplianceReports.tsx
+R  src/components/Dashboard.tsx -> frontend/src/components/Dashboard.tsx
+R  src/components/ESGImpact.tsx -> frontend/src/components/ESGImpact.tsx
+R  src/components/FacilitySettings.tsx -> frontend/src/components/FacilitySettings.tsx
+R  src/components/MobileNav.tsx -> frontend/src/components/MobileNav.tsx
+R  src/components/NavLink.tsx -> frontend/src/components/NavLink.tsx
+R  src/components/Sidebar.tsx -> frontend/src/components/Sidebar.tsx
+R  src/components/TeamAnalytics.tsx -> frontend/src/components/TeamAnalytics.tsx
+R  src/components/WardRanks.tsx -> frontend/src/components/WardRanks.tsx
+R  src/components/ui/accordion.tsx -> frontend/src/components/ui/accordion.tsx
+R  src/components/ui/alert-dialog.tsx -> frontend/src/components/ui/alert-dialog.tsx
+R  src/components/ui/alert.tsx -> frontend/src/components/ui/alert.tsx
+R  src/components/ui/aspect-ratio.tsx -> frontend/src/components/ui/aspect-ratio.tsx
+R  src/components/ui/avatar.tsx -> frontend/src/components/ui/avatar.tsx
+R  src/components/ui/badge.tsx -> frontend/src/components/ui/badge.tsx
+R  src/components/ui/breadcrumb.tsx -> frontend/src/components/ui/breadcrumb.tsx
+R  src/components/ui/button.tsx -> frontend/src/components/ui/button.tsx
+R  src/components/ui/calendar.tsx -> frontend/src/components/ui/calendar.tsx
+R  src/components/ui/card.tsx -> frontend/src/components/ui/card.tsx
+R  src/components/ui/carousel.tsx -> frontend/src/components/ui/carousel.tsx
+R  src/components/ui/chart.tsx -> frontend/src/components/ui/chart.tsx
+R  src/components/ui/checkbox.tsx -> frontend/src/components/ui/checkbox.tsx
+R  src/components/ui/collapsible.tsx -> frontend/src/components/ui/collapsible.tsx
+R  src/components/ui/command.tsx -> frontend/src/components/ui/command.tsx
+R  src/components/ui/context-menu.tsx -> frontend/src/components/ui/context-menu.tsx
+R  src/components/ui/dialog.tsx -> frontend/src/components/ui/dialog.tsx
+R  src/components/ui/drawer.tsx -> frontend/src/components/ui/drawer.tsx
+R  src/components/ui/dropdown-menu.tsx -> frontend/src/components/ui/dropdown-menu.tsx
+R  src/components/ui/form.tsx -> frontend/src/components/ui/form.tsx
+R  src/components/ui/hover-card.tsx -> frontend/src/components/ui/hover-card.tsx
+R  src/components/ui/input-otp.tsx -> frontend/src/components/ui/input-otp.tsx
+R  src/components/ui/input.tsx -> frontend/src/components/ui/input.tsx
+R  src/components/ui/label.tsx -> frontend/src/components/ui/label.tsx
+R  src/components/ui/menubar.tsx -> frontend/src/components/ui/menubar.tsx
+R  src/components/ui/navigation-menu.tsx -> frontend/src/components/ui/navigation-menu.tsx
+R  src/components/ui/pagination.tsx -> frontend/src/components/ui/pagination.tsx
+R  src/components/ui/popover.tsx -> frontend/src/components/ui/popover.tsx
+R  src/components/ui/progress.tsx -> frontend/src/components/ui/progress.tsx
+R  src/components/ui/radio-group.tsx -> frontend/src/components/ui/radio-group.tsx
+R  src/components/ui/resizable.tsx -> frontend/src/components/ui/resizable.tsx
+R  src/components/ui/scroll-area.tsx -> frontend/src/components/ui/scroll-area.tsx
+R  src/components/ui/select.tsx -> frontend/src/components/ui/select.tsx
+R  src/components/ui/separator.tsx -> frontend/src/components/ui/separator.tsx
+R  src/components/ui/sheet.tsx -> frontend/src/components/ui/sheet.tsx
+R  src/components/ui/sidebar.tsx -> frontend/src/components/ui/sidebar.tsx
+R  src/components/ui/skeleton.tsx -> frontend/src/components/ui/skeleton.tsx
+R  src/components/ui/slider.tsx -> frontend/src/components/ui/slider.tsx
+R  src/components/ui/sonner.tsx -> frontend/src/components/ui/sonner.tsx
+R  src/components/ui/switch.tsx -> frontend/src/components/ui/switch.tsx
+R  src/components/ui/table.tsx -> frontend/src/components/ui/table.tsx
+R  src/components/ui/tabs.tsx -> frontend/src/components/ui/tabs.tsx
+R  src/components/ui/textarea.tsx -> frontend/src/components/ui/textarea.tsx
+R  src/components/ui/toast.tsx -> frontend/src/components/ui/toast.tsx
+R  src/components/ui/toaster.tsx -> frontend/src/components/ui/toaster.tsx
+R  src/components/ui/toggle-group.tsx -> frontend/src/components/ui/toggle-group.tsx
+R  src/components/ui/toggle.tsx -> frontend/src/components/ui/toggle.tsx
+R  src/components/ui/tooltip.tsx -> frontend/src/components/ui/tooltip.tsx
+R  src/components/ui/use-toast.ts -> frontend/src/components/ui/use-toast.ts
+R  src/hooks/use-mobile.tsx -> frontend/src/hooks/use-mobile.tsx
+R  src/hooks/use-toast.ts -> frontend/src/hooks/use-toast.ts
+R  src/index.css -> frontend/src/index.css
+R  src/lib/protocols.ts -> frontend/src/lib/protocols.ts
+R  src/lib/store.ts -> frontend/src/lib/store.ts
+R  src/lib/utils.ts -> frontend/src/lib/utils.ts
+R  src/main.tsx -> frontend/src/main.tsx
+R  src/pages/AuthPage.tsx -> frontend/src/pages/AuthPage.tsx
+R  src/pages/Index.tsx -> frontend/src/pages/Index.tsx
+R  src/pages/NotFound.tsx -> frontend/src/pages/NotFound.tsx
+R  src/test/example.test.ts -> frontend/src/test/example.test.ts
+R  src/test/setup.ts -> frontend/src/test/setup.ts
+R  src/vite-env.d.ts -> frontend/src/vite-env.d.ts
+R  tailwind.config.ts -> frontend/tailwind.config.ts
+R  tsconfig.app.json -> frontend/tsconfig.app.json
+R  tsconfig.json -> frontend/tsconfig.json
+R  tsconfig.node.json -> frontend/tsconfig.node.json
+R  vite.config.ts -> frontend/vite.config.ts
+R  vitest.config.ts -> frontend/vitest.config.ts
+A  inference_engine.ipynb
+D  public/favicon.ico
+D  src/components/AIScanner.tsx
+?? git_staged.txt
