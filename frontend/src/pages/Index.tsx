@@ -1,6 +1,7 @@
 import { useNav } from '@/lib/store';
 import Sidebar from '@/components/Sidebar';
 import Dashboard from '@/components/Dashboard';
+import ReportsStatistics from '@/components/ReportsStatistics';
 import AIScanner from '@/components/AIScanner';
 import AuditManifest from '@/components/AuditManifest';
 import WardRanks from '@/components/WardRanks';
@@ -15,6 +16,7 @@ import { Navigate } from 'react-router-dom';
 
 const tabs: Record<string, React.ComponentType> = {
   dashboard: Dashboard,
+  reports: ReportsStatistics,
   scanner: AIScanner,
   audit: AuditManifest,
   ranks: WardRanks,

@@ -1,8 +1,9 @@
-import { LayoutDashboard, Camera, History, Trophy, MessageSquare, Leaf } from 'lucide-react';
+import { LayoutDashboard, Camera, History, Trophy, MessageSquare, Leaf, BarChart3 } from 'lucide-react';
 import { useNav, useAuth } from '@/lib/store';
 
 const allItems = [
   { id: 'dashboard' as const, icon: LayoutDashboard, label: 'Home' },
+  { id: 'reports' as const, icon: BarChart3, label: 'Reports' },
   { id: 'scanner' as const, icon: Camera, label: 'Scan' },
   { id: 'audit' as const, icon: History, label: 'Audit' },
   { id: 'ranks' as const, icon: Trophy, label: 'Ranks' },
@@ -15,6 +16,7 @@ const MobileNav = () => {
   const { user } = useAuth();
   const items = allItems.filter((item) => {
     if (item.id === 'ranks' && user?.role === 'common') return false;
+    if (item.id === 'reports' && user?.role !== 'audit_manager') return false;
     return true;
   });
 
@@ -28,11 +30,10 @@ const MobileNav = () => {
         <button
           key={item.id}
           onClick={() => setTab(item.id)}
-          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-300 ${
-            activeTab === item.id 
-              ? 'text-primary neon-text-subtle' 
+          className={`flex flex-col items-center gap-1 p-2 rounded-xl transition-all duration-300 ${activeTab === item.id
+              ? 'text-primary neon-text-subtle'
               : 'text-muted-foreground'
-          }`}
+            }`}
         >
           <item.icon className={`w-5 h-5 ${activeTab === item.id ? '' : 'opacity-50'}`} />
           <span className="text-[10px] font-display font-bold tracking-wider">{item.label}</span>

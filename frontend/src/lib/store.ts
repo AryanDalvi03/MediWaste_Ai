@@ -36,7 +36,7 @@ export const useScanStore = create<ScanState>((set) => ({
   addEntry: (entry) => set((s) => ({ history: [entry, ...s.history] })),
 }));
 
-type Tab = 'dashboard' | 'scanner' | 'audit' | 'ranks' | 'assistant' | 'green' | 'team' | 'compliance' | 'facility';
+type Tab = 'dashboard' | 'reports' | 'scanner' | 'audit' | 'ranks' | 'assistant' | 'green' | 'team' | 'compliance' | 'facility';
 
 interface NavState {
   activeTab: Tab;
