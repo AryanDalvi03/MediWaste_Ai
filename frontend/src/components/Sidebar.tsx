@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion';
 import {
   LayoutDashboard, Camera, History, Trophy, MessageSquare, Leaf,
-  Users, ClipboardCheck, Building2, LogOut, Zap, ChevronLeft, ChevronRight, ShieldCheck, Sun, Moon
+  Users, ClipboardCheck, Building2, LogOut, Zap, ChevronLeft, ChevronRight, ShieldCheck, Sun, Moon, BarChart3
 } from 'lucide-react';
 import { useNav, useAuth, useTheme } from '@/lib/store';
 import { useNavigate } from 'react-router-dom';
 
 const navItems = [
   { id: 'dashboard' as const, icon: LayoutDashboard, label: 'Dashboard' },
+  { id: 'reports' as const, icon: BarChart3, label: 'Reports & Statistics' },
   { id: 'scanner' as const, icon: Camera, label: 'AI Scanner' },
   { id: 'audit' as const, icon: History, label: 'Audit Manifest' },
   { id: 'ranks' as const, icon: Trophy, label: 'Ward Ranks' },
@@ -31,11 +32,12 @@ const Sidebar = () => {
   // Filter nav items based on role
   const filteredNavItems = navItems.filter((item) => {
     if (item.id === 'ranks' && role === 'common') return false;
+    if (item.id === 'reports' && role !== 'audit_manager') return false;
     return true;
   });
 
   const showHospital = role === 'audit_manager' || role === 'hospital_staff';
-  
+
   // Hospital staff gets restricted items
   const filteredHospitalItems = hospitalItems.filter((item) => {
     if (role === 'hospital_staff' && (item.id === 'compliance' || item.id === 'facility')) return false;
@@ -94,7 +96,7 @@ const Sidebar = () => {
           {!sidebarCollapsed && <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>}
         </button>
         <button
-          onClick={() => {}}
+          onClick={() => { }}
           className={`w-full bg-destructive/80 text-destructive-foreground rounded-xl font-display font-bold text-[10px] uppercase tracking-widest flex items-center gap-2 neon-hazard hover:bg-destructive transition-all ${sidebarCollapsed ? 'p-3 justify-center' : 'p-3 px-4 justify-center'}`}
         >
           <Zap className="w-4 h-4 shrink-0" />
@@ -127,11 +129,10 @@ const NavButton = ({ item, active, onClick, collapsed }: NavButtonProps) => (
   <motion.button
     whileTap={{ scale: 0.97 }}
     onClick={onClick}
-    className={`w-full flex items-center gap-3 rounded-xl transition-all duration-300 font-semibold text-sm ${collapsed ? 'p-3 justify-center' : 'p-3 px-4'} ${
-      active
+    className={`w-full flex items-center gap-3 rounded-xl transition-all duration-300 font-semibold text-sm ${collapsed ? 'p-3 justify-center' : 'p-3 px-4'} ${active
         ? 'gradient-teal text-primary-foreground neon-glow-sm'
         : 'text-sidebar-foreground hover:bg-muted/30 hover:text-primary'
-    }`}
+      }`}
   >
     <item.icon className={`w-5 h-5 shrink-0 ${active ? '' : 'opacity-60'}`} />
     {!collapsed && <span>{item.label}</span>}
