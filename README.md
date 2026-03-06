@@ -21,7 +21,7 @@ MediWaste AI is a comprehensive solution designed for the classification and man
 - **Framework**: FastAPI (Python)
 - **AI/ML**: TensorFlow (EfficientNet), scikit-learn (Random Forest), XGBoost
 - **Image Processing**: OpenCV, Pillow, scikit-image
-- **Server**: Uvicorn
+
 
 ## Prerequisites
 
