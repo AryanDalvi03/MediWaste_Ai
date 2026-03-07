@@ -7,7 +7,7 @@ MediWaste AI is a comprehensive solution designed for the classification and man
 - **AI Waste Classification**: Upload images of waste to get real-time classification and disposal bin recommendations (e.g., Red Sharps Bin, Yellow Biohazard Bin, Recycling, etc.).
 - **Hazard Status Detection**: Automatically flags whether the identified waste is Hazardous or Non-Hazardous.
 - **Reporting & Analytics**: Interactive dashboard showing waste generation trends, composition, financial impact, and environmental metrics (CO2 emissions, treatment distribution).
-- **Modern UI**: Built with React, Vite, Tailwind CSS, and shadcn-ui for a responsive and premium user experience.
+- **Modern UI**: Built with React, Vite, Tailwind CSS for a responsive and premium user experience.
 
 ## Tech Stack
 
