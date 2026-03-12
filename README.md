@@ -15,7 +15,7 @@ MediWaste AI is a comprehensive solution designed for the classification and man
 - **Framework**: React, Vite
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS, shadcn-ui
-- **Package Manager**: npm / bun
+- **Package Manager**: npm
 
 ### Backend
 - **Framework**: FastAPI (Python)
