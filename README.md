@@ -1,6 +1,6 @@
 # MediWaste AI
 
-MediWaste AI is a comprehensive solution designed for the classification and management of medical and general waste. It features a React-based frontend dashboard and a powerful FastAPI backend powered by a hybrid AI classification engine (EfficientNet + Random Forest) for accurate waste sorting.
+MediWaste AI is a comprehensive solution designed for the classification and management of medical and general waste. It features a React-based frontend dashboard and a powerful FastAPI backend powered by a hybrid AI classification engine (EfficientNet + Random Forest) for accurate sorting of the waste 
 
 ## Features
 
