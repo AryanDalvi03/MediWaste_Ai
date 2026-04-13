@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Camera, Upload, RefreshCw, Download } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth, useScanStore } from "@/lib/store";
 
 interface PredictionResult {
   class: string;
@@ -24,6 +25,9 @@ export function AIScanner() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const addEntry = useScanStore((s) => s.addEntry);
+  const { user } = useAuth();
+  const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -88,7 +92,7 @@ export function AIScanner() {
     formData.append('file', file);
 
     try {
-      const response = await fetch('http://localhost:8000/predict', {
+      const response = await fetch(`${apiBase}/predict`, {
         method: 'POST',
         body: formData,
       });
@@ -100,6 +104,31 @@ export function AIScanner() {
       const data = await response.json();
       setResult(data);
       toast.success("Analysis complete!");
+
+      // Update UI immediately
+      addEntry({
+        type: String(data.class),
+        confidence: Number(data.confidence),
+        timestamp: Date.now(),
+      });
+
+      // Persist to database (best-effort)
+      try {
+        await fetch(`${apiBase}/api/scans`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            waste_type: data.class,
+            confidence: data.confidence,
+            disposal_bin: data.disposal_bin,
+            hazard_status: data.hazard_status,
+            feature_dim: data.feature_dim,
+            user_email: user?.email ?? null,
+          }),
+        });
+      } catch {
+        // non-blocking
+      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to analyze image. Is the backend running?");

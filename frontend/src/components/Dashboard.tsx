@@ -2,11 +2,17 @@ import { motion } from 'framer-motion';
 import { Activity, Maximize } from 'lucide-react';
 import { useScanStore } from '@/lib/store';
 import { PROTOCOLS } from '@/lib/protocols';
+import { useEffect } from 'react';
 
 const Dashboard = () => {
+  const refreshFromServer = useScanStore((s) => s.refreshFromServer);
   const history = useScanStore((s) => s.history);
   const hazCount = history.filter((h) => (PROTOCOLS[h.type] || PROTOCOLS.default).hazardous).length;
   const carbon = history.reduce((acc, curr) => acc + (PROTOCOLS[curr.type]?.co2 || 0), 0);
+
+  useEffect(() => {
+    refreshFromServer();
+  }, [refreshFromServer]);
 
   return (
     <div className="space-y-8 animate-slide-up">

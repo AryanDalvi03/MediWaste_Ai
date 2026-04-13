@@ -29,11 +29,32 @@ export const useAuth = create<AuthState>((set) => {
 interface ScanState {
   history: ScanEntry[];
   addEntry: (entry: ScanEntry) => void;
+  setHistory: (entries: ScanEntry[]) => void;
+  refreshFromServer: () => Promise<void>;
 }
 
 export const useScanStore = create<ScanState>((set) => ({
   history: MOCK_ENTRIES,
   addEntry: (entry) => set((s) => ({ history: [entry, ...s.history] })),
+  setHistory: (entries) => set({ history: entries }),
+  refreshFromServer: async () => {
+    const baseUrl = (import.meta as any).env?.VITE_API_URL || "http://localhost:8000";
+    try {
+      const res = await fetch(`${baseUrl}/api/scans/recent?limit=50`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data)) return;
+      set({
+        history: data.map((d) => ({
+          type: String(d.waste_type ?? ""),
+          confidence: Number(d.confidence ?? 0),
+          timestamp: Number(d.timestamp ?? Date.now()),
+        })),
+      });
+    } catch {
+      // Keep existing history (mock/local) if server unreachable.
+    }
+  },
 }));
 
 type Tab = 'dashboard' | 'reports' | 'scanner' | 'audit' | 'ranks' | 'assistant' | 'green' | 'team' | 'compliance' | 'facility';

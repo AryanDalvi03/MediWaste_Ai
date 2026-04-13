@@ -1,12 +1,17 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search, Download } from 'lucide-react';
 import { useScanStore } from '@/lib/store';
 import { PROTOCOLS } from '@/lib/protocols';
 
 const AuditManifest = () => {
   const [filter, setFilter] = useState('');
+  const refreshFromServer = useScanStore((s) => s.refreshFromServer);
   const history = useScanStore((s) => s.history);
   const filtered = history.filter((h) => h.type.toLowerCase().includes(filter.toLowerCase()));
+
+  useEffect(() => {
+    refreshFromServer();
+  }, [refreshFromServer]);
 
   return (
     <div className="space-y-6 animate-slide-up flex flex-col h-full">

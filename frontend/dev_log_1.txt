@@ -1,0 +1,32 @@
+
+> vite_react_shadcn_ts@0.0.0 dev
+> vite
+
+Port 8080 is in use, trying another one...
+
+  [32m[1mVITE[22m v5.4.19[39m  [2mready in [0m[1m619[22m[2m[0m ms[22m
+
+  [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m8081[22m/[39m
+  [32m➜[39m  [1mNetwork[22m: [36mhttp://192.168.1.35:[1m8081[22m/[39m
+[2m[32m  ➜[39m[22m[2m  press [22m[1mh + enter[22m[2m to show help[22m
+Error: [31m  Failed to scan for dependencies from entries:
+  C:/Users/aryan/Documents/mediwaste_ai_website/frontend/index.html
+
+  [39m[31mX [41;31m[[41;97mERROR[41;31m][0m [1mUnexpected "<<"[0m
+
+    src/pages/AuthPage.tsx:32:0:
+[37m      32 │ [32m<<[37m<<<<< HEAD
+         ╵ [32m~~[0m
+
+
+    at failureErrorWithLog (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:1472:15)
+    at C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:945:25
+    at runOnEndCallbacks (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:1315:45)
+    at buildResponseToResult (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:943:7)
+    at C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:955:9
+    at new Promise (<anonymous>)
+    at requestCallbacks.on-end (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:954:54)
+    at handleRequest (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:647:17)
+    at handleIncomingPacket (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:672:7)
+    at Socket.readFromStdout (C:\Users\aryan\Documents\mediwaste_ai_website\frontend\node_modules\esbuild\lib\main.js:600:7)
+Terminate batch job (Y/N)? 

@@ -2,9 +2,10 @@ import os
 import math
 import random
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from mediwaste_inference_7364 import MediWaste7364Engine
 
@@ -51,9 +52,29 @@ def load_engine():
         return False
 
 
+from database import connect_to_mongo, close_mongo_connection, create_indexes
+from database import get_db
+
+
+class ScanCreate(BaseModel):
+    waste_type: str
+    confidence: float
+    disposal_bin: str
+    hazard_status: str
+    ward_name: str | None = None
+    hospital_id: str | None = None
+    user_email: str | None = None
+    feature_dim: int | None = None
+
 @app.on_event("startup")
 async def startup_event():
+    await connect_to_mongo()
+    await create_indexes()
     load_engine()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await close_mongo_connection()
 
 
 @app.get("/")
@@ -89,6 +110,60 @@ async def predict_image(file: UploadFile = File(...)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/scans")
+async def create_scan(scan: ScanCreate):
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database not connected")
+
+    doc = {
+        "waste_type": scan.waste_type,
+        "confidence": float(scan.confidence),
+        "disposal_bin": scan.disposal_bin,
+        "hazard_status": scan.hazard_status,
+        "ward_name": scan.ward_name,
+        "hospital_id": scan.hospital_id,
+        "user_email": scan.user_email,
+        "feature_dim": scan.feature_dim,
+        "timestamp": datetime.now(timezone.utc),
+    }
+    res = await db.scans.insert_one(doc)
+    return {"id": str(res.inserted_id)}
+
+
+@app.get("/api/scans/recent")
+async def get_recent_scans(limit: int = 25):
+    db = get_db()
+    if db is None:
+        return []
+
+    limit = max(1, min(int(limit), 200))
+    cursor = db.scans.find({}, sort=[("timestamp", -1)]).limit(limit)
+    items = []
+    async for d in cursor:
+        ts = d.get("timestamp")
+        if isinstance(ts, datetime):
+            ts_ms = int(ts.timestamp() * 1000)
+        else:
+            ts_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+
+        items.append(
+            {
+                "id": str(d.get("_id")),
+                "waste_type": d.get("waste_type", ""),
+                "confidence": float(d.get("confidence", 0)),
+                "disposal_bin": d.get("disposal_bin", ""),
+                "hazard_status": d.get("hazard_status", ""),
+                "ward_name": d.get("ward_name"),
+                "hospital_id": d.get("hospital_id"),
+                "user_email": d.get("user_email"),
+                "timestamp": ts_ms,
+                "feature_dim": d.get("feature_dim"),
+            }
+        )
+    return items
 
 
 def get_waste_info(class_name):

@@ -12,26 +12,33 @@ const AIAssistant = () => {
     { role: 'bot', text: 'MediWaste AI v4.0 is online. How can I assist with clinical compliance today?' },
   ]);
   const [input, setInput] = useState('');
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
     const text = input.trim();
     setMessages((m) => [...m, { role: 'user', text }]);
     setInput('');
-    setTimeout(() => {
-      let reply = 'I am checking hospital compliance guidelines for your query...';
-      if (text.toLowerCase().includes('needle'))
-        reply = 'Protocol: Dispose in Red Sharps bin. Never recap. If an injury occurred, use the SOS Protocol immediately.';
-      if (text.toLowerCase().includes('glove'))
-        reply = 'Gloves should be disposed in Yellow Clinical Bin. Standard infectious waste procedure applies.';
-      setMessages((m) => [...m, { role: 'bot', text: reply }]);
-    }, 800);
+    
+    try {
+      const res = await fetch('http://localhost:8002/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: text }),
+      });
+      if (!res.ok) throw new Error('API Error');
+      const data = await res.json();
+      setMessages((m) => [...m, { role: 'bot', text: data.reply }]);
+    } catch (error) {
+      setMessages((m) => [...m, { role: 'bot', text: 'Error connecting to the MediWaste RAG AI Assistant. Please ensure it is running on port 8002.' }]);
+    }
   };
 
   return (
@@ -46,7 +53,7 @@ const AIAssistant = () => {
         </div>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-radial-glow">
+      <div ref={chatContainerRef} className="flex-1 p-6 overflow-y-auto space-y-4 custom-scrollbar bg-radial-glow">
         {messages.map((m, i) => (
           <motion.div
             key={i}
@@ -63,7 +70,6 @@ const AIAssistant = () => {
             </div>
           </motion.div>
         ))}
-        <div ref={bottomRef} />
       </div>
 
       <form onSubmit={handleSend} className="p-4 border-t border-border/20 flex gap-3 shrink-0" style={{ background: 'hsla(220,20%,10%,0.6)' }}>

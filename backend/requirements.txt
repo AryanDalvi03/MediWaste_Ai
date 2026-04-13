@@ -9,3 +9,6 @@ pillow
 opencv-python-headless
 scikit-image
 xgboost
+motor
+pymongo
+python-dotenv
