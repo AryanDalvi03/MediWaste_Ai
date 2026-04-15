@@ -11,13 +11,13 @@ const navItems = [
   { id: 'reports' as const, icon: BarChart3, label: 'Reports & Statistics' },
   { id: 'scanner' as const, icon: Camera, label: 'AI Scanner' },
   { id: 'audit' as const, icon: History, label: 'Audit Manifest' },
-  { id: 'ranks' as const, icon: Trophy, label: 'Ward Ranks' },
+  { id: 'ranks' as const, icon: Trophy, label: 'Bin Operations' },
   { id: 'assistant' as const, icon: MessageSquare, label: 'AI Assistant' },
   { id: 'green' as const, icon: Leaf, label: 'ESG Impact' },
 ];
 
 const hospitalItems = [
-  { id: 'team' as const, icon: Users, label: 'Team Analytics' },
+  { id: 'team' as const, icon: Users, label: 'Staff Analytics' },
   { id: 'compliance' as const, icon: ClipboardCheck, label: 'Compliance Reports' },
   { id: 'facility' as const, icon: Building2, label: 'Facility Settings' },
 ];

@@ -72,6 +72,28 @@ async def startup_event():
     await create_indexes()
     load_engine()
 
+    db = get_db()
+    if db is not None:
+        # Seed staff if empty
+        if await db.staff.count_documents({}) == 0:
+            staff_seeds = [
+              { "name": 'Sarah Johnson', "ward": 'Radiology Ward', "floor": 1, "accuracy": 98.5, "items": 342, "rank": 1, "role": 'Waste Supervisor' },
+              { "name": 'Ahmed Hassan', "ward": 'Surgery Ward', "floor": 2, "accuracy": 97.2, "items": 428, "rank": 2, "role": 'Disposal Coordinator' },
+              { "name": 'Patricia Lee', "ward": 'ICU Ward', "floor": 1, "accuracy": 96.8, "items": 567, "rank": 3, "role": 'Segregation Officer' },
+              { "name": 'Liu Wei', "ward": 'Cardiology', "floor": 2, "accuracy": 94.0, "items": 120, "rank": 4, "role": 'Ward Waste Officer' },
+            ]
+            await db.staff.insert_many(staff_seeds)
+            
+        # Seed bins if empty
+        if await db.bins.count_documents({}) == 0:
+            bins_seeds = [
+              { "id": "F11", "floor": 1, "roomId": "ER-1", "compartments": { "Infectious": 72, "Sharps": 91, "General": 40, "Chemical": 10 }, "worker": "Sarah Johnson", "workerRole": "Waste Supervisor", "lastCollected": datetime.now(timezone.utc), "collections": 8, "status": "Full", "overallFill": 91 },
+              { "id": "F12", "floor": 1, "roomId": "ER-1", "compartments": { "Infectious": 40, "Sharps": 20, "General": 72, "Chemical": 5 }, "worker": "Raj Patel", "workerRole": "Disposal Tech", "lastCollected": datetime.now(timezone.utc), "collections": 5, "status": "Active", "overallFill": 72 },
+              { "id": "F21", "floor": 2, "roomId": "SURG-2", "compartments": { "Infectious": 67, "Sharps": 89, "General": 12, "Chemical": 4 }, "worker": "Ahmed Hassan", "workerRole": "Disposal Coordinator", "lastCollected": datetime.now(timezone.utc), "collections": 9, "status": "Full", "overallFill": 89 }
+            ]
+            await db.bins.insert_many(bins_seeds)
+
+
 @app.on_event("shutdown")
 async def shutdown_event():
     await close_mongo_connection()
@@ -364,10 +386,114 @@ def generate_reports_data(period: str):
 @app.get("/api/reports")
 async def get_reports(period: str = Query("monthly", enum=["monthly", "quarterly", "yearly"])):
     try:
-        data = generate_reports_data(period)
-        return data
+        db = get_db()
+        if db is None:
+            return generate_reports_data(period)  # Fallback to static if no DB
+
+        doc = await db.reports_statistics.find_one({"period": "base"})
+        if not doc:
+            # Seed base data
+            base_data = generate_reports_data(period)
+            base_data["period"] = "base"
+            await db.reports_statistics.insert_one(base_data)
+            doc = base_data
+        
+        # Calculate dynamic additions from today's scans to make stats "real"
+        # For an MVP, we just add the scan counts to the base numbers
+        scan_count = await db.scans.count_documents({})
+        if scan_count > 0:
+            doc["waste_generation"]["total_current_year"] += scan_count * 2  # Approx 2kg per item
+            doc["composition"]["breakdown"][0]["kg"] += scan_count * 1.5
+            
+        doc["_id"] = str(doc.get("_id", ""))
+        return doc
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/bins")
+async def get_bins():
+    db = get_db()
+    if db is None:
+        return []
+    cursor = db.bins.find({})
+    bins = []
+    async for b in cursor:
+        b["_id"] = str(b["_id"])
+        if "lastCollected" in b and isinstance(b["lastCollected"], datetime):
+            b["lastCollected"] = b["lastCollected"].strftime("%Ih ago")
+        bins.append(b)
+    return bins
+
+class BinCreate(BaseModel):
+    floor: int
+    roomId: str
+
+@app.post("/api/bins")
+async def create_bin(binReq: BinCreate):
+    db = get_db()
+    prefix = f"F{binReq.floor}"
+    # auto name as per sequence
+    count = await db.bins.count_documents({"floor": binReq.floor})
+    new_id = f"{prefix}{count + 1}"
+    
+    # Simple rule: 1 staff per floor. Link worker dynamically
+    staff = await db.staff.find_one({"floor": binReq.floor})
+    worker_name = staff["name"] if staff else "Unassigned"
+    worker_role = staff["role"] if staff else "Pending Assignment"
+    
+    doc = {
+        "id": new_id, 
+        "floor": binReq.floor, 
+        "roomId": binReq.roomId,
+        "compartments": { "Infectious": 0, "Sharps": 0, "General": 0, "Chemical": 0 },
+        "worker": worker_name, 
+        "workerRole": worker_role,
+        "lastCollected": datetime.now(timezone.utc),
+        "collections": 0,
+        "status": "Active",
+        "overallFill": 0
+    }
+    await db.bins.insert_one(doc)
+    doc["_id"] = str(doc["_id"])
+    return doc
+
+@app.delete("/api/bins/{bin_id}")
+async def delete_bin(bin_id: str):
+    db = get_db()
+    await db.bins.delete_one({"id": bin_id})
+    return {"success": True}
+
+@app.get("/api/staff")
+async def get_staff():
+    db = get_db()
+    cursor = db.staff.find({})
+    staff = []
+    async for s in cursor:
+        s["_id"] = str(s["_id"])
+        staff.append(s)
+    return staff
+
+class StaffUpdate(BaseModel):
+    floor: int
+    role: str
+
+@app.put("/api/staff/{staff_name}")
+async def update_staff(staff_name: str, updateReq: StaffUpdate):
+    db = get_db()
+    
+    # Update the staff's detail
+    await db.staff.update_one(
+        {"name": staff_name},
+        {"$set": {"floor": updateReq.floor, "role": updateReq.role}}
+    )
+    
+    # Enforce: 1 person per floor rule. Transfer ALL bins on that floor to this staff.
+    await db.bins.update_many(
+        {"floor": updateReq.floor},
+        {"$set": {"worker": staff_name, "workerRole": updateReq.role}}
+    )
+    
+    return {"success": True}
 
 
 if __name__ == "__main__":

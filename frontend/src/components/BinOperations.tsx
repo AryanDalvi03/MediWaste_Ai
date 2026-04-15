@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  MapPin, User, AlertTriangle, Clock,
+  MapPin, User, AlertTriangle, Clock, Plus, Trash2,
   BarChart2, Building2, Layers, ShieldCheck, Beaker, Recycle, FileWarning
 } from 'lucide-react';
 
@@ -15,17 +15,16 @@ interface BinCompartments {
 }
 
 interface SmartBin {
-  id: string; // e.g., F11, F12
+  id: string;
   roomId: string;
   compartments: BinCompartments;
-  // A bin needs service if ANY compartment is Full (>= 85%)
   status: 'Active' | 'Full' | 'Maintenance';
-  // overallFill tracks the highest fill level across the 4 compartments
   overallFill: number;
   worker: string;
   workerRole: string;
   lastCollected: string;
   collections: number;
+  floor: number;
 }
 
 interface Ward {
@@ -48,96 +47,33 @@ interface Room {
 }
 
 // ─── SVG Floor Plan Coordinates ──────────────────────────────────────────────
-// Designed to look like a generic top-down hospital core layout
 const ROOMS: Room[] = [
-  // Floor 1
   { id: 'F1-CORR', label: 'Main Corridor', x: 70, y: 10, w: 260, h: 40, floor: 1, type: 'corridor' },
   { id: 'ER-1', label: 'Emergency', x: 10, y: 60, w: 120, h: 100, floor: 1, type: 'ward' },
   { id: 'ICU-1', label: 'ICU Suite', x: 140, y: 60, w: 120, h: 100, floor: 1, type: 'ward' },
   { id: 'LAB-1', label: 'Laboratory', x: 270, y: 60, w: 120, h: 100, floor: 1, type: 'ward' },
-  // Floor 2
   { id: 'F2-CORR', label: 'Corridor', x: 70, y: 60, w: 260, h: 40, floor: 2, type: 'corridor' },
   { id: 'SURG-2', label: 'Surgery', x: 10, y: 10, w: 140, h: 45, floor: 2, type: 'ward' },
   { id: 'CARD-2', label: 'Cardiology', x: 160, y: 10, w: 230, h: 45, floor: 2, type: 'ward' },
   { id: 'ORTHO-2', label: 'Orthopedics', x: 10, y: 110, w: 380, h: 60, floor: 2, type: 'ward' },
-  // Floor 3
   { id: 'F3-CORR', label: 'Corridor', x: 70, y: 80, w: 260, h: 30, floor: 3, type: 'corridor' },
   { id: 'PED-3', label: 'Pediatrics', x: 10, y: 10, w: 180, h: 60, floor: 3, type: 'ward' },
   { id: 'MAT-3', label: 'Maternity', x: 200, y: 10, w: 190, h: 60, floor: 3, type: 'ward' },
   { id: 'ONCO-3', label: 'Oncology', x: 10, y: 120, w: 380, h: 50, floor: 3, type: 'ward' },
 ];
 
-const calcBinStatus = (comps: BinCompartments) => {
-  const max = Math.max(comps.Infectious, comps.Sharps, comps.General, comps.Chemical);
-  return {
-    overallFill: max,
-    status: max >= 85 ? 'Full' : 'Active' as 'Active' | 'Full'
-  };
+const ROOM_WARD_MAP: Record<string, { id: string; name: string; floor: number }> = {
+  'ER-1': { id: 'ER', name: 'Emergency Room', floor: 1 },
+  'ICU-1': { id: 'ICU', name: 'Intensive Care Unit', floor: 1 },
+  'LAB-1': { id: 'LAB', name: 'Laboratory', floor: 1 },
+  'SURG-2': { id: 'SURG', name: 'Surgery Ward', floor: 2 },
+  'CARD-2': { id: 'CARD', name: 'Cardiology', floor: 2 },
+  'ORTHO-2': { id: 'ORTHO', name: 'Orthopedics', floor: 2 },
+  'PED-3': { id: 'PED', name: 'Pediatrics', floor: 3 },
+  'MAT-3': { id: 'MAT', name: 'Maternity', floor: 3 },
+  'ONCO-3': { id: 'ONCO', name: 'Oncology', floor: 3 },
 };
 
-const WARDS: Ward[] = [
-  // FLOOR 1
-  {
-    id: 'ER', name: 'Emergency Room', floor: 1, compliance: 97.4,
-    bins: [
-      { id: 'F11', roomId: 'ER-1', compartments: { Infectious: 72, Sharps: 91, General: 40, Chemical: 10 }, worker: 'Sarah Johnson', workerRole: 'Waste Supervisor', lastCollected: '2h ago', collections: 8, ...calcBinStatus({ Infectious: 72, Sharps: 91, General: 40, Chemical: 10 }) },
-      { id: 'F12', roomId: 'ER-1', compartments: { Infectious: 40, Sharps: 20, General: 72, Chemical: 5 }, worker: 'Raj Patel', workerRole: 'Disposal Tech', lastCollected: '4h ago', collections: 5, ...calcBinStatus({ Infectious: 40, Sharps: 20, General: 72, Chemical: 5 }) },
-    ],
-  },
-  {
-    id: 'ICU', name: 'Intensive Care Unit', floor: 1, compliance: 98.9,
-    bins: [
-      { id: 'F13', roomId: 'ICU-1', compartments: { Infectious: 55, Sharps: 30, General: 10, Chemical: 88 }, worker: 'Patricia Lee', workerRole: 'Segregation Officer', lastCollected: '3h ago', collections: 6, ...calcBinStatus({ Infectious: 55, Sharps: 30, General: 10, Chemical: 88 }) },
-    ],
-  },
-  {
-    id: 'LAB', name: 'Laboratory', floor: 1, compliance: 95.1,
-    bins: [
-      { id: 'F14', roomId: 'LAB-1', compartments: { Infectious: 10, Sharps: 45, General: 22, Chemical: 80 }, worker: 'Amara Diallo', workerRole: 'Lab Waste Tech', lastCollected: '5h ago', collections: 4, ...calcBinStatus({ Infectious: 10, Sharps: 45, General: 22, Chemical: 80 }) },
-    ],
-  },
-  // FLOOR 2
-  {
-    id: 'SURG', name: 'Surgery Ward', floor: 2, compliance: 99.2,
-    bins: [
-      { id: 'F21', roomId: 'SURG-2', compartments: { Infectious: 67, Sharps: 89, General: 12, Chemical: 4 }, worker: 'Ahmed Hassan', workerRole: 'Disposal Coordinator', lastCollected: '2h ago', collections: 9, ...calcBinStatus({ Infectious: 67, Sharps: 89, General: 12, Chemical: 4 }) },
-      { id: 'F22', roomId: 'SURG-2', compartments: { Infectious: 80, Sharps: 40, General: 30, Chemical: 22 }, worker: 'Nora Kim', workerRole: 'Sharps Specialist', lastCollected: '6h ago', collections: 11, ...calcBinStatus({ Infectious: 80, Sharps: 40, General: 30, Chemical: 22 }) },
-    ],
-  },
-  {
-    id: 'CARD', name: 'Cardiology', floor: 2, compliance: 96.7,
-    bins: [
-      { id: 'F23', roomId: 'CARD-2', compartments: { Infectious: 14, Sharps: 20, General: 60, Chemical: 0 }, worker: 'Liu Wei', workerRole: 'Ward Waste Officer', lastCollected: '3h ago', collections: 5, ...calcBinStatus({ Infectious: 14, Sharps: 20, General: 60, Chemical: 0 }) },
-    ],
-  },
-  {
-    id: 'ORTHO', name: 'Orthopedics', floor: 2, compliance: 94.3,
-    bins: [
-      { id: 'F24', roomId: 'ORTHO-2', compartments: { Infectious: 28, Sharps: 95, General: 78, Chemical: 12 }, worker: 'Daniel Osei', workerRole: 'Waste Handler', lastCollected: '2h ago', collections: 6, ...calcBinStatus({ Infectious: 28, Sharps: 95, General: 78, Chemical: 12 }) },
-    ],
-  },
-  // FLOOR 3
-  {
-    id: 'PED', name: 'Pediatrics', floor: 3, compliance: 98.0,
-    bins: [
-      { id: 'F31', roomId: 'PED-3', compartments: { Infectious: 55, Sharps: 30, General: 42, Chemical: 5 }, worker: 'Fatima Al-Rashid', workerRole: 'Waste Supervisor', lastCollected: '1h ago', collections: 4, ...calcBinStatus({ Infectious: 55, Sharps: 30, General: 42, Chemical: 5 }) },
-    ],
-  },
-  {
-    id: 'MAT', name: 'Maternity', floor: 3, compliance: 97.6,
-    bins: [
-      { id: 'F32', roomId: 'MAT-3', compartments: { Infectious: 30, Sharps: 45, General: 68, Chemical: 25 }, worker: 'Grace Mensah', workerRole: 'Ward Waste Tech', lastCollected: '40m ago', collections: 3, ...calcBinStatus({ Infectious: 30, Sharps: 45, General: 68, Chemical: 25 }) },
-    ],
-  },
-  {
-    id: 'ONCO', name: 'Oncology', floor: 3, compliance: 99.5,
-    bins: [
-      { id: 'F33', roomId: 'ONCO-3', compartments: { Infectious: 40, Sharps: 85, General: 20, Chemical: 50 }, worker: 'Yuki Tanaka', workerRole: 'Hazmat Specialist', lastCollected: '2h ago', collections: 4, ...calcBinStatus({ Infectious: 40, Sharps: 85, General: 20, Chemical: 50 }) },
-    ],
-  },
-];
-
-// ─── Category Constants ──────────────────────────────────────────────────────
 const CATEGORIES: { key: keyof BinCompartments; color: string; bg: string; icon: any }[] = [
   { key: 'Infectious', color: 'text-red-400', bg: 'bg-red-500', icon: ShieldCheck },
   { key: 'Sharps', color: 'text-orange-400', bg: 'bg-orange-500', icon: FileWarning },
@@ -159,7 +95,7 @@ function fillGlow(pct: number): string {
 
 // ─── Sub-Components ──────────────────────────────────────────────────────────
 
-const BinCard = ({ bin }: { bin: SmartBin }) => {
+const BinCard = ({ bin, onRemove }: { bin: SmartBin, onRemove: (id: string) => void }) => {
   const isDanger = bin.overallFill >= 85;
 
   return (
@@ -178,15 +114,20 @@ const BinCard = ({ bin }: { bin: SmartBin }) => {
             Smart Bin
           </span>
         </div>
-        {isDanger ? (
-          <span className="bg-red-500/15 text-red-400 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider animate-pulse">
-            <AlertTriangle className="w-3 h-3" /> Full
-          </span>
-        ) : (
-          <span className="bg-emerald-500/15 text-emerald-400 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider">
-            Active
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+            <button onClick={() => onRemove(bin.id)} className="text-muted-foreground hover:text-red-400 transition-colors bg-background/50 p-1 rounded-md">
+                <Trash2 className="w-3.5 h-3.5" />
+            </button>
+            {isDanger ? (
+            <span className="bg-red-500/15 text-red-400 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider animate-pulse">
+                <AlertTriangle className="w-3 h-3" /> Full
+            </span>
+            ) : (
+            <span className="bg-emerald-500/15 text-emerald-400 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-display font-bold uppercase tracking-wider">
+                Active
+            </span>
+            )}
+        </div>
       </div>
 
       {/* 4 Compartment Bars */}
@@ -270,7 +211,6 @@ const FloorMap = ({ floorNum, wards }: { floorNum: number; wards: Ward[] }) => {
 
       <div className="relative w-full overflow-x-auto bg-[#0a0f18] rounded-xl border border-border/10">
         <svg viewBox="0 0 400 185" className="w-full" style={{ minWidth: 320 }} onMouseLeave={() => setTooltip(null)}>
-          {/* Blueprint Grid */}
           <defs>
             <pattern id={`blueprint-grid-${floorNum}`} width="10" height="10" patternUnits="userSpaceOnUse">
               <path d="M 10 0 L 0 0 0 10" fill="none" stroke="hsla(188,70%,50%,0.07)" strokeWidth="0.5" />
@@ -278,46 +218,27 @@ const FloorMap = ({ floorNum, wards }: { floorNum: number; wards: Ward[] }) => {
           </defs>
           <rect width="400" height="185" fill={`url(#blueprint-grid-${floorNum})`} />
 
-          {/* Rooms and Corridors */}
           {rooms.map((room) => {
             const isCorridor = room.type === 'corridor';
             const roomBins = binsByRoom[room.id] || [];
             
             return (
               <g key={room.id}>
-                {/* Floor Area */}
-                <rect
-                  x={room.x} y={room.y} width={room.w} height={room.h}
-                  fill={isCorridor ? 'hsla(0,0%,15%,0.3)' : 'hsla(220,30%,12%,0.7)'}
-                  stroke={isCorridor ? 'hsla(188,70%,50%,0.1)' : 'hsla(188,70%,50%,0.3)'}
-                  strokeWidth="1.5"
-                />
+                <rect x={room.x} y={room.y} width={room.w} height={room.h} fill={isCorridor ? 'hsla(0,0%,15%,0.3)' : 'hsla(220,30%,12%,0.7)'} stroke={isCorridor ? 'hsla(188,70%,50%,0.1)' : 'hsla(188,70%,50%,0.3)'} strokeWidth="1.5" />
                 {!isCorridor && (
-                  <text
-                    x={room.x + 5} y={room.y + 12}
-                    fill="hsla(188,70%,50%,0.6)"
-                    fontSize="6" fontFamily="Orbitron, sans-serif" fontWeight="700" letterSpacing="0.05em"
-                  >
+                  <text x={room.x + 5} y={room.y + 12} fill="hsla(188,70%,50%,0.6)" fontSize="6" fontFamily="Orbitron, sans-serif" fontWeight="700" letterSpacing="0.05em">
                     {room.label.toUpperCase()}
                   </text>
                 )}
-
-                {/* Draw Smart Bins Inside Rooms */}
                 {roomBins.map((bin, bi) => {
                   const spacing = room.w / (roomBins.length + 1);
                   const cx = room.x + spacing * (bi + 1);
                   const cy = room.y + room.h / 2 + 5;
-                  
                   const col = fillColor(bin.overallFill);
                   const glow = fillGlow(bin.overallFill);
-
                   return (
                     <g key={bin.id} onMouseEnter={() => setTooltip({ bin, x: cx, y: cy })} style={{ cursor: 'pointer' }}>
-                      {/* Pulse ring for critical */}
-                      {bin.overallFill >= 85 && (
-                        <circle cx={cx} cy={cy} r="10" fill="none" stroke={col} strokeWidth="0.5" className="animate-ping" opacity="0.5" />
-                      )}
-                      {/* Base Icon for Smart Bin */}
+                      {bin.overallFill >= 85 && <circle cx={cx} cy={cy} r="10" fill="none" stroke={col} strokeWidth="0.5" className="animate-ping" opacity="0.5" />}
                       <rect x={cx - 6} y={cy - 6} width="12" height="12" rx="2" fill="hsla(220,15%,20%,1)" stroke={col} strokeWidth="1" style={{ filter: `drop-shadow(${glow})` }} />
                       <circle cx={cx} cy={cy} r="2.5" fill={col} />
                     </g>
@@ -327,7 +248,6 @@ const FloorMap = ({ floorNum, wards }: { floorNum: number; wards: Ward[] }) => {
             );
           })}
 
-          {/* SVG Tooltip */}
           {tooltip && (() => {
             const tx = Math.min(Math.max(tooltip.x, 60), 340);
             const ty = Math.max(tooltip.y - 75, 5);
@@ -335,14 +255,11 @@ const FloorMap = ({ floorNum, wards }: { floorNum: number; wards: Ward[] }) => {
               <g className="animate-fade-in pointer-events-none">
                 <rect x={tx - 55} y={ty} width="110" height="66" rx="6" fill="hsla(220,25%,8%,0.95)" stroke="hsla(174,80%,48%,0.4)" strokeWidth="1" style={{ filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.5))' }} />
                 <text x={tx} y={ty + 14} textAnchor="middle" fill="hsla(174,80%,48%,1)" fontSize="8" fontFamily="Orbitron" fontWeight="700">BIN {tooltip.bin.id}</text>
-                
                 <text x={tx - 45} y={ty + 28} fill="hsla(0,72%,65%,1)" fontSize="6" fontFamily="sans-serif">INFECTIOUS: {tooltip.bin.compartments.Infectious}%</text>
                 <text x={tx + 5} y={ty + 28} fill="hsla(38,92%,60%,1)" fontSize="6" fontFamily="sans-serif">SHARPS: {tooltip.bin.compartments.Sharps}%</text>
                 <text x={tx - 45} y={ty + 38} fill="hsla(160,65%,55%,1)" fontSize="6" fontFamily="sans-serif">GENERAL: {tooltip.bin.compartments.General}%</text>
                 <text x={tx + 5} y={ty + 38} fill="hsla(60,90%,60%,1)" fontSize="6" fontFamily="sans-serif">CHEMICAL: {tooltip.bin.compartments.Chemical}%</text>
-                
                 <path d={`M ${tx - 45} ${ty + 44} L ${tx + 45} ${ty + 44}`} stroke="hsla(220,20%,30%,1)" strokeWidth="0.5" />
-                
                 <text x={tx} y={ty + 54} textAnchor="middle" fill="hsla(180,20%,80%,1)" fontSize="6.5" fontFamily="sans-serif">{tooltip.bin.worker} ({tooltip.bin.workerRole})</text>
               </g>
             );
@@ -357,7 +274,6 @@ const FloorMap = ({ floorNum, wards }: { floorNum: number; wards: Ward[] }) => {
 
 const WardCard = ({ ward, selected, onClick }: { ward: Ward; selected: boolean; onClick: () => void }) => {
   const fullBins = ward.bins.filter((b) => b.status === 'Full').length;
-  // Calculate average fill across ALL compartments in ALL bins in this ward
   let totalPct = 0;
   let compCount = 0;
   ward.bins.forEach(b => {
@@ -414,13 +330,65 @@ const WardCard = ({ ward, selected, onClick }: { ward: Ward; selected: boolean; 
 
 // ─── Main Component ──────────────────────────────────────────────────────────
 
-const WardRanks = () => {
+const BinOperations = () => {
   const [activeFloor, setActiveFloor] = useState(1);
   const [selectedWardId, setSelectedWardId] = useState<string | null>(null);
+  const [allBinsData, setAllBinsData] = useState<SmartBin[]>([]);
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [deployRoom, setDeployRoom] = useState<string>('');
+  
+  const fetchBins = () => {
+    fetch('http://localhost:8000/api/bins')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) setAllBinsData(data);
+        else console.warn("Expected array of bins, received", data);
+      })
+      .catch(err => console.error("Could not fetch bins", err));
+  };
 
-  const floorWards = WARDS.filter((w) => w.floor === activeFloor);
+  useEffect(() => {
+    fetchBins();
+  }, []);
+
+  const addBin = async () => {
+    if (!deployRoom) return;
+    try {
+        await fetch('http://localhost:8000/api/bins', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ floor: activeFloor, roomId: deployRoom })
+        });
+        setIsDeploying(false);
+        setDeployRoom('');
+        fetchBins();
+    } catch(e) { console.error(e) }
+  };
+
+  const removeBin = async (binId: string) => {
+    try {
+        await fetch(`http://localhost:8000/api/bins/${binId}`, { method: 'DELETE' });
+        fetchBins();
+    } catch(e) { console.error(e) }
+  };
+
+  // Build Wards Dynamically based on current Bins
+  const dynamicWards: Ward[] = [];
+  if (Array.isArray(allBinsData)) {
+    allBinsData.forEach(bin => {
+       const wardInfo = ROOM_WARD_MAP[bin.roomId] || { id: 'MISC', name: 'Misc Ward', floor: bin.floor };
+       let w = dynamicWards.find(x => x.id === wardInfo.id);
+       if (!w) {
+           w = { ...wardInfo, compliance: 98.0, bins: [] };
+           dynamicWards.push(w);
+       }
+       w.bins.push(bin);
+    });
+  }
+
+  const floorWards = dynamicWards.filter((w) => w.floor === activeFloor);
   const effectiveWardId = selectedWardId && floorWards.find((w) => w.id === selectedWardId) ? selectedWardId : floorWards[0]?.id ?? null;
-  const selectedWard = WARDS.find((w) => w.id === effectiveWardId) ?? null;
+  const selectedWard = dynamicWards.find((w) => w.id === effectiveWardId) ?? null;
 
   const allFloorBins = floorWards.flatMap((w) => w.bins);
   const fullCount = allFloorBins.filter((b) => b.status === 'Full').length;
@@ -428,23 +396,48 @@ const WardRanks = () => {
 
   return (
     <div className="space-y-8 animate-slide-up pb-12 pr-2">
-      {/* Header */}
       <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h2 className="text-4xl font-extrabold tracking-tight text-foreground neon-text-subtle">
             Advanced Bin Operations
           </h2>
           <p className="text-muted-foreground mt-1 text-sm">
-            Monitor real-time compartment analytics across 4-category smart bins.
+            Monitor real-time compartment analytics across 4-category smart bins. Data synced dynamically.
           </p>
         </div>
-        <div className="glass-card px-4 py-2.5 rounded-xl flex items-center gap-2.5 neon-border self-start sm:self-auto">
-          <div className="w-2 h-2 rounded-full bg-safe neon-dot animate-pulse" />
-          <span className="font-display font-bold text-[10px] tracking-widest uppercase text-foreground">Live Telemetry</span>
+        <div className="flex items-center gap-3">
+            {isDeploying ? (
+                <div className="glass-card px-4 py-2.5 rounded-xl flex items-center gap-2 text-primary border border-primary/40 animate-fade-in shadow-[0_0_10px_rgba(20,184,166,0.1)]">
+                    <select 
+                       value={deployRoom} 
+                       onChange={(e) => setDeployRoom(e.target.value)} 
+                       className="bg-transparent outline-none text-xs font-bold font-display uppercase tracking-widest cursor-pointer"
+                    >
+                       <option value="" className="text-slate-900 bg-white">Select Room...</option>
+                       {ROOMS.filter(r => r.floor === activeFloor && r.type === 'ward').map(r => (
+                           <option key={r.id} value={r.id} className="text-slate-900 bg-white">{r.label}</option>
+                       ))}
+                    </select>
+                    <button onClick={addBin} disabled={!deployRoom} className="hover:text-safe transition-colors disabled:opacity-50" title="Confirm Deploy">
+                        <Plus className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => { setIsDeploying(false); setDeployRoom(''); }} className="hover:text-hazard transition-colors ml-1" title="Cancel">
+                        <span className="text-xs font-bold">✕</span>
+                    </button>
+                </div>
+            ) : (
+                <button onClick={() => setIsDeploying(true)} className="glass-card px-4 py-2.5 rounded-xl flex items-center gap-2 hover:bg-primary/20 transition-all text-primary border border-transparent">
+                    <Plus className="w-4 h-4" />
+                    <span className="font-display font-bold text-[10px] tracking-widest uppercase">Deploy Bin</span>
+                </button>
+            )}
+            <div className="glass-card px-4 py-2.5 rounded-xl flex items-center gap-2.5 neon-border">
+                <div className="w-2 h-2 rounded-full bg-safe neon-dot animate-pulse" />
+                <span className="font-display font-bold text-[10px] tracking-widest uppercase text-foreground">Live Telemetry</span>
+            </div>
         </div>
       </header>
 
-      {/* Floor Selector */}
       <div className="flex items-center gap-2">
         <Layers className="w-4 h-4 text-muted-foreground" />
         <span className="text-xs font-display text-muted-foreground uppercase tracking-widest mr-2">Floor Maps</span>
@@ -466,7 +459,6 @@ const WardRanks = () => {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {[
           { label: 'Smart Bins Deployed', value: String(allFloorBins.length), icon: <Layers className="w-4 h-4 text-primary" /> },
@@ -485,7 +477,6 @@ const WardRanks = () => {
 
       <AnimatePresence mode="wait">
         <motion.div key={activeFloor} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }} className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-6">
-          {/* Left panel */}
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-2 px-1">
               <Building2 className="w-4 h-4 text-primary" />
@@ -496,12 +487,9 @@ const WardRanks = () => {
             ))}
           </div>
 
-          {/* Right panel */}
           <div className="space-y-6">
-            {/* SVG MAP */}
             <FloorMap floorNum={activeFloor} wards={floorWards} />
 
-            {/* Smart Bins */}
             {selectedWard && (
               <div className="space-y-4">
                 <div className="flex flex-col border-b border-border/10 pb-4">
@@ -509,13 +497,13 @@ const WardRanks = () => {
                     {selectedWard.name} Telemetry
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">
-                    Displaying 4-compartment status for active smart bins.
+                    Displaying 4-compartment status for active smart bins on this ward.
                   </p>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {selectedWard.bins.map((bin, i) => (
-                    <BinCard key={bin.id} bin={bin} />
+                  {selectedWard.bins.map((bin) => (
+                    <BinCard key={bin.id} bin={bin} onRemove={removeBin} />
                   ))}
                 </div>
               </div>
@@ -527,4 +515,4 @@ const WardRanks = () => {
   );
 };
 
-export default WardRanks;
+export default BinOperations;

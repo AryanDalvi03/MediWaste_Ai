@@ -153,7 +153,6 @@ const ReportsStatistics = () => {
     const handleExport = (type: 'pdf' | 'csv') => {
         if (!data) return;
         if (type === 'csv') {
-            // Build CSV from monthly waste data
             const rows = [
                 ['Month', 'Current Year (kg)', 'Previous Year (kg)', 'Cost (₹)', 'CO₂ Emissions (kg)'],
                 ...data.waste_generation.monthly_data.map((m, i) => [
@@ -173,40 +172,39 @@ const ReportsStatistics = () => {
             a.click();
             URL.revokeObjectURL(url);
         } else {
-            // Generate printable report
-            const printContent = `
-        MediWaste AI - Reports & Statistics
-        Generated: ${new Date().toLocaleString()}
-        Period: ${period}
-        
-        === WASTE GENERATION OVERVIEW ===
-        Total Waste (Current Year): ${data.waste_generation.total_current_year.toLocaleString()} kg
-        Total Waste (Previous Year): ${data.waste_generation.total_previous_year.toLocaleString()} kg
-        Yearly Growth: ${data.waste_generation.yearly_growth_pct}%
-        Waste per Bed/Day: ${data.waste_generation.waste_per_bed_day} kg
-        
-        === WASTE COMPOSITION ===
-        Hazardous Waste: ${data.composition.hazardous_pct}%
-        WHO Benchmark: ${data.composition.who_benchmark}%
-        Deviation: ${data.composition.deviation_from_benchmark > 0 ? '+' : ''}${data.composition.deviation_from_benchmark}%
-        
-        === FINANCIAL IMPACT ===
-        Total Disposal Cost: ₹${data.financial.total_disposal_cost.toLocaleString()}
-        Avg Cost/kg: ₹${data.financial.cost_per_kg_avg}
-        Hazardous vs General Cost Difference: ₹${data.financial.cost_difference}/kg
-        
-        === ENVIRONMENTAL IMPACT ===
-        CO₂ Emissions: ${data.environmental.co2_emissions_kg} kg
-        Sustainable Treatment: ${data.environmental.sustainable_treatment_pct}%
-        Incinerated: ${data.environmental.pct_incinerated}%
-      `;
-            const blob = new Blob([printContent], { type: 'text/plain' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `MediWaste_Report_${new Date().toISOString().slice(0, 10)}.txt`;
-            a.click();
-            URL.revokeObjectURL(url);
+            import('jspdf').then(({ default: jsPDF }) => {
+                import('jspdf-autotable').then(({ default: autoTable }) => {
+                    const doc = new jsPDF();
+                    
+                    doc.setFontSize(22);
+                    doc.text('MediWaste AI', 14, 20);
+                    doc.setFontSize(14);
+                    doc.text('Reports & Statistics', 14, 30);
+                    
+                    doc.setFontSize(10);
+                    doc.setTextColor(100);
+                    doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 40);
+                    doc.text(`Period: ${period.toUpperCase()}`, 14, 46);
+                    
+                    doc.setTextColor(0);
+                    
+                    autoTable(doc, {
+                        startY: 55,
+                        head: [['Metric', 'Value', 'Details']],
+                        body: [
+                            ['Total Waste (Current Year)', `${data.waste_generation.total_current_year.toLocaleString()} kg`, `Growth: ${data.waste_generation.yearly_growth_pct}%`],
+                            ['Waste per Bed/Day', `${data.waste_generation.waste_per_bed_day} kg`, `Beds: ${data.waste_generation.total_beds}`],
+                            ['Hazardous Waste', `${data.composition.hazardous_pct}%`, `WHO Benchmark: ${data.composition.who_benchmark}%`],
+                            ['Total Disposal Cost', `INR ${data.financial.total_disposal_cost.toLocaleString()}`, `Avg Cost/kg: INR ${data.financial.cost_per_kg_avg}`],
+                            ['CO2 Emissions', `${data.environmental.co2_emissions_kg.toLocaleString()} kg`, `Sustainable Methods: ${data.environmental.sustainable_treatment_pct}%`],
+                        ],
+                        theme: 'striped',
+                        headStyles: { fillColor: [20, 184, 166] }
+                    });
+
+                    doc.save(`MediWaste_Report_${new Date().toISOString().slice(0, 10)}.pdf`);
+                });
+            });
         }
     };
 

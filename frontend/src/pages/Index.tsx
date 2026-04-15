@@ -4,10 +4,10 @@ import Dashboard from '@/components/Dashboard';
 import ReportsStatistics from '@/components/ReportsStatistics';
 import AIScanner from '@/components/AIScanner';
 import AuditManifest from '@/components/AuditManifest';
-import WardRanks from '@/components/WardRanks';
+import BinOperations from '@/components/BinOperations';
 import AIAssistant from '@/components/AIAssistant';
 import ESGImpact from '@/components/ESGImpact';
-import TeamAnalytics from '@/components/TeamAnalytics';
+import StaffAnalytics from '@/components/StaffAnalytics';
 import ComplianceReports from '@/components/ComplianceReports';
 import FacilitySettings from '@/components/FacilitySettings';
 import MobileNav from '@/components/MobileNav';
@@ -20,10 +20,10 @@ const tabs: Record<string, React.ComponentType> = {
   reports: ReportsStatistics,
   scanner: AIScanner,
   audit: AuditManifest,
-  ranks: WardRanks,
+  ranks: BinOperations,
   assistant: AIAssistant,
   green: ESGImpact,
-  team: TeamAnalytics,
+  team: StaffAnalytics,
   compliance: ComplianceReports,
   facility: FacilitySettings,
 };
