@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+python-multipart
+tensorflow>=2.15.0
+scikit-learn
+joblib
+numpy
+pillow
+opencv-python-headless
+scikit-image
+xgboost
+motor
+pymongo
+python-dotenv
+protobuf>=7.34.1
