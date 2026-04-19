@@ -226,6 +226,15 @@
     box-shadow: 0 0 16px hsla(174, 80%, 48%, 0.15);
   }
 
+  /* Autofill glassmorphism fix */
+  .glass-input:-webkit-autofill,
+  .glass-input:-webkit-autofill:hover,
+  .glass-input:-webkit-autofill:focus,
+  .glass-input:-webkit-autofill:active {
+    transition: background-color 5000s ease-in-out 0s;
+    -webkit-text-fill-color: hsl(var(--foreground)) !important;
+  }
+
   /* === NEON EFFECTS === */
   .neon-border {
     border: 1px solid hsla(174, 80%, 48%, 0.3);
