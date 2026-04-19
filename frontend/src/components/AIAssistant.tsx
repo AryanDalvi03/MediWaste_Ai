@@ -76,12 +76,17 @@ const AIAssistant = () => {
       </div>
 
       <form onSubmit={handleSend} className="p-4 border-t border-border/20 flex gap-3 shrink-0" style={{ background: 'hsla(220,20%,10%,0.6)' }}>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Query clinical protocols or safety manuals..."
-          className="flex-1 glass-input rounded-xl px-5 py-3 text-sm font-medium focus:outline-none text-foreground placeholder:text-muted-foreground/50"
-        />
+        <div className="relative flex-1">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Query clinical protocols or safety manuals..."
+            className="w-full glass-input rounded-xl px-5 py-3 text-sm font-medium focus:outline-none text-foreground placeholder:text-muted-foreground/50"
+          />
+          <div className="absolute right-3 bottom-0.5 text-[9px] font-display font-black text-black tracking-tighter uppercase">
+            {input.length} characters
+          </div>
+        </div>
         <button type="submit" className="gradient-teal text-primary-foreground p-3 rounded-xl neon-glow-sm hover:neon-glow transition-all">
           <Send className="w-5 h-5" />
         </button>

@@ -1,14 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Mail, Lock, Eye, EyeOff, Shield, Building2, Leaf } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, Mail, Lock, Eye, EyeOff, Shield, Building2, Leaf, ChevronLeft } from 'lucide-react';
 import { useAuth } from '@/lib/store';
 import { UserRole } from '@/lib/protocols';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
+interface StaffMember {
+  _id: string;
+  name: string;
+  role: string;
+  floor: number;
+}
+
+const FLOOR_COLORS = [
+  'from-primary/5 to-primary/10 border-primary/20 hover:border-primary/40',
+  'from-blue-500/5 to-blue-500/10 border-blue-500/20 hover:border-blue-500/40',
+  'from-violet-500/5 to-violet-500/10 border-violet-500/20 hover:border-violet-500/40',
+];
+
 const AuthPage = () => {
-  const [step, setStep] = useState<'login' | 'role'>('login');
+  const [step, setStep] = useState<'login' | 'role' | 'staff-select'>('role');
+  const [selectedRole, setSelectedRole] = useState<UserRole | null>(null);
+  const [selectedStaff, setSelectedStaff] = useState<StaffMember | null>(null);
+  const [staffList, setStaffList] = useState<StaffMember[]>([]);
+  const [staffLoading, setStaffLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -18,20 +35,141 @@ const AuthPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) return;
-    setStep('role');
-  };
+    if (!email || !password || !selectedRole) return;
 
-  const handleGoogleSignIn = () => {
-    setEmail('user@gmail.com');
-    setStep('role');
-  };
-
-  const handleRoleSelect = (role: UserRole) => {
-    login(email, role);
+    login(
+      email || (selectedStaff ? `${selectedStaff.name.toLowerCase().replace(' ', '.')}@hospital.com` : email),
+      selectedRole,
+      selectedStaff?.name
+    );
     navigate('/dashboard');
   };
 
+  const handleGoogleSignIn = () => {
+    if (!selectedRole) return;
+    setEmail('user@gmail.com');
+    login('user@gmail.com', selectedRole, selectedStaff?.name);
+    navigate('/dashboard');
+  };
+
+  const handleRoleSelect = async (role: UserRole) => {
+    setSelectedRole(role);
+    if (role === 'hospital_staff') {
+      setStaffLoading(true);
+      setStep('staff-select');
+      try {
+        const res = await fetch('http://localhost:8000/api/staff');
+        const data = await res.json();
+        if (Array.isArray(data)) setStaffList(data);
+      } catch (e) {
+        console.error('Could not load staff list', e);
+        setStaffList([
+          { _id: '1', name: 'Jay Gupta', role: 'Ward Sanitation Lead', floor: 1 },
+          { _id: '2', name: 'Kishore Sharma', role: 'Ward Sanitation Lead', floor: 2 },
+          { _id: '3', name: 'Asha Pathak', role: 'Ward Sanitation Lead', floor: 3 },
+        ]);
+      } finally {
+        setStaffLoading(false);
+      }
+    } else {
+      setStep('login');
+    }
+  };
+
+  const handleStaffSelect = (staff: StaffMember) => {
+    setSelectedStaff(staff);
+    setStep('login');
+  };
+
+  // ─── Staff Selection Screen ───────────────────────────────────────────────
+  if (step === 'staff-select') {
+    return (
+      <div className="min-h-screen bg-background bg-grid bg-orb-teal flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="staff-select"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="w-full max-w-lg relative z-10"
+          >
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-3 mb-6">
+                <div className="gradient-teal p-3 rounded-2xl neon-glow">
+                  <ShieldCheck className="w-7 h-7 text-primary-foreground" />
+                </div>
+                <h1 className="font-display font-extrabold text-xl tracking-wider text-foreground">
+                  MEDI<span className="text-gradient-teal">WASTE</span>
+                </h1>
+              </div>
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground mb-2 neon-text-subtle">
+                Select Staff Member
+              </h2>
+              <p className="text-muted-foreground text-sm">
+                Choose your profile to access your assigned workload
+              </p>
+            </div>
+
+            {staffLoading ? (
+              <div className="flex items-center justify-center py-16">
+                <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {staffList.map((staff, idx) => (
+                  <motion.button
+                    key={staff._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.08 }}
+                    whileHover={{ scale: 1.02, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleStaffSelect(staff)}
+                    className={`w-full p-5 rounded-2xl text-left group relative overflow-hidden border bg-gradient-to-r ${FLOOR_COLORS[idx % 3]} transition-all duration-300`}
+                  >
+                    <div className="flex items-center gap-4">
+                      {/* Avatar */}
+                      <div className="gradient-teal w-12 h-12 rounded-xl flex items-center justify-center font-display font-extrabold text-lg text-primary-foreground neon-glow-sm shrink-0">
+                        {staff.name.split(' ').map((n: string) => n[0]).join('')}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-bold text-foreground text-base group-hover:text-primary transition-colors">
+                          {staff.name}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {staff.role} &middot; Floor {staff.floor}
+                        </p>
+                      </div>
+                      {/* Floor badge */}
+                      <span className="text-[10px] font-display font-bold uppercase tracking-widest px-3 py-1.5 rounded-full glass-card text-primary border border-primary/30 shrink-0">
+                        Floor {staff.floor}
+                      </span>
+                    </div>
+                  </motion.button>
+                ))}
+              </div>
+            )}
+
+            {/* Back button */}
+            <button
+              onClick={() => {
+                setSelectedRole(null);
+                setStep('role');
+              }}
+              className="mt-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mx-auto"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Back to Role Selection
+            </button>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  // ─── Role Selection Screen ────────────────────────────────────────────────
   if (step === 'role') {
     return (
       <div className="min-h-screen bg-background bg-grid bg-orb-teal flex items-center justify-center p-4">
@@ -102,11 +240,20 @@ const AuthPage = () => {
               </motion.button>
             ))}
           </div>
+
+          <button
+            onClick={() => navigate('/')}
+            className="mt-6 flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mx-auto"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back to Home
+          </button>
         </motion.div>
       </div>
     );
   }
 
+  // ─── Login Screen ─────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-background bg-grid bg-orb-teal flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
@@ -115,6 +262,22 @@ const AuthPage = () => {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-md relative z-10"
       >
+        <button
+          onClick={() => {
+            if (selectedRole === 'hospital_staff') {
+              setStep('staff-select');
+            } else {
+              setStep('role');
+            }
+          }}
+          className="group mb-8 flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300"
+        >
+          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:-translate-x-1 transition-all">
+            <ChevronLeft className="w-4 h-4" />
+          </div>
+          Back to {selectedRole === 'hospital_staff' ? 'Staff Selection' : 'Role Selection'}
+        </button>
+
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-3 mb-6">
             <div className="gradient-teal p-3 rounded-2xl neon-glow">
@@ -146,7 +309,12 @@ const AuthPage = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-xs font-display font-semibold uppercase tracking-widest text-muted-foreground">Password</label>
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-display font-semibold uppercase tracking-widest text-muted-foreground">Password</label>
+                <span className={`text-[10px] font-display font-bold tracking-widest uppercase ${password.length >= 8 ? 'text-primary' : 'text-red-500/70'}`}>
+                  {password.length}/8
+                </span>
+              </div>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground opacity-50" />
                 <Input
