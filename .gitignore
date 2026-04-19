@@ -46,6 +46,7 @@ backend/*.txt
 !backend/requirements.txt
 *.txt
 !README.md
+!runtime.txt
 
 # Large archives and AI assistant folder
 AI ASSISTANT/
