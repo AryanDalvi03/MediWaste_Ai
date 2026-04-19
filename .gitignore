@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Environment
+.env
+.env.local
+__pycache__/
+*.pyc
+
+# Build output
+frontend/dist/
+frontend/build/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python virtual env
+venv/
+.venv/
+
+# Logs
+*.log
+debug.log
+engine_test.log
+server_log.txt
+crash.txt
+git_status.txt
+
+# Large model files (download separately - see README)
+*.keras
+*.joblib
+*.h5
+
+# Dataset (too large for git)
+backend/dataset/
+
+# Temporary test/debug files
+backend/*.log
+backend/*.txt
+!backend/requirements.txt
+*.txt
+!README.md
+
+# Large archives and AI assistant folder
+AI ASSISTANT/
+AI ASSISTANT.7z
+*.7z
+*.zip
+
+# ChromaDB vector store (generated locally)
+chroma_db/
+
+# Scratch/debug output files
+diff_output.txt
+format_status.txt
+git_diff.txt
+git_stat.txt
+git_staged.txt
+ls_tree.txt
+mongo_queries.js
