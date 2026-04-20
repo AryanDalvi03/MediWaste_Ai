@@ -14,11 +14,11 @@ warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
 
 app = FastAPI(title="MediWaste AI Scanner Engine")
 
-# Configure CORS
+# Configure CORS - allow_credentials must be False when allow_origins=["*"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for development
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
