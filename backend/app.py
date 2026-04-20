@@ -7,7 +7,8 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from mediwaste_inference_7364 import MediWaste7364Engine
+# MediWaste7364Engine is imported lazily inside load_engine() to avoid
+# blocking uvicorn port binding during startup (TF takes 30-50s to import)
 
 # Suppress warnings
 warnings.filterwarnings("ignore", category=UserWarning, module="sklearn")
@@ -40,10 +41,12 @@ def load_engine():
         if not os.path.exists(f)
     ]
     if missing:
-        print(f"CRITICAL: Missing files: {missing}")
+        print(f"CRITICAL: Missing model files: {missing}. /predict endpoint will be unavailable.")
         return False
 
     try:
+        # Lazy import: TensorFlow loads here (30-50s), not at app startup
+        from mediwaste_inference_7364 import MediWaste7364Engine
         engine = MediWaste7364Engine(model_path, classifier_path, scaler_path)
         print("All models loaded via Hybrid 7364 Engine.")
         return True
@@ -76,7 +79,7 @@ class WorkLogCreate(BaseModel):
 async def startup_event():
     await connect_to_mongo()
     await create_indexes()
-    load_engine()
+    # Engine loads lazily on first /predict request to avoid startup timeout
 
     db = get_db()
     if db is not None:
