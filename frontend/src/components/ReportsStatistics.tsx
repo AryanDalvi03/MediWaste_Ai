@@ -5,11 +5,11 @@ import {
     DollarSign, Leaf, AlertTriangle, ArrowUpRight, ArrowDownRight, FileText
 } from 'lucide-react';
 import {
-
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
     LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, AreaChart, Area,
     XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+
+const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
 
 // ─── Types ──────────────────────────────────────────────────────────
 interface MonthlyData { month: string; current: number; previous: number; }

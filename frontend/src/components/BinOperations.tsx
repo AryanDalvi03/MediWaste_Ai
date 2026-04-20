@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
   MapPin, User, AlertTriangle, Clock, Plus, Trash2, CheckCircle, StickyNote,
   BarChart2, Building2, Layers, ShieldCheck, Beaker, Recycle, FileWarning, Edit2
 } from 'lucide-react';
+
+const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
 
 // ─── Types & Interfaces ──────────────────────────────────────────────────────
 

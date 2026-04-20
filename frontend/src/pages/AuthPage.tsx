@@ -58,7 +58,8 @@ const AuthPage = () => {
       setStaffLoading(true);
       setStep('staff-select');
       try {
-        const res = await fetch('http://localhost:8000/api/staff');
+        const apiBase = (import.meta as any).env?.VITE_API_URL || 'https://mediwaste-ai-backend.onrender.com';
+        const res = await fetch(`${apiBase}/api/staff`);
         const data = await res.json();
         if (Array.isArray(data)) setStaffList(data);
       } catch (e) {

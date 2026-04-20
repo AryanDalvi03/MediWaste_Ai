@@ -142,7 +142,8 @@ export function AIScanner() {
     setFile(null);
     setResult(null);
     setIsCameraOpen(false);
-    if (fileInputRef.current) fileInputRef.current.value = `';
+    if (fileInputRef.current) fileInputRef.current.value = '';
+
   };
 
   const downloadReport = () => {
