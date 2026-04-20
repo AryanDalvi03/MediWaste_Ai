@@ -113,6 +113,25 @@ def read_root():
     return {"status": "online", "message": "MediWaste AI Engine Ready (Hybrid 7364)"}
 
 
+@app.get("/debug")
+def debug_info():
+    files_to_check = [
+        'efficientnet_finetuned_model.keras',
+        'rf_finetuned_features_scaler1 (1).joblib',
+        'rf_finetuned_features_classifier.joblib',
+    ]
+    return {
+        "cwd": os.getcwd(),
+        "current_folder": CURRENT_FOLDER,
+        "engine_loaded": engine is not None,
+        "files": {
+            f: os.path.exists(os.path.join(CURRENT_FOLDER, f))
+            for f in files_to_check
+        },
+        "dir_contents": os.listdir(CURRENT_FOLDER)
+    }
+
+
 @app.post("/predict")
 async def predict_image(file: UploadFile = File(...)):
     global engine
