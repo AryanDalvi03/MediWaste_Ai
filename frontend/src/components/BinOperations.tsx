@@ -5,7 +5,7 @@ import {
   BarChart2, Building2, Layers, ShieldCheck, Beaker, Recycle, FileWarning, Edit2
 } from 'lucide-react';
 
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ─── Types & Interfaces ──────────────────────────────────────────────────────
 

@@ -27,7 +27,7 @@ export function AIScanner() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const addEntry = useScanStore((s) => s.addEntry);
   const { user } = useAuth();
-  const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+  const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {

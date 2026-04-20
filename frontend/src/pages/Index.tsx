@@ -18,7 +18,7 @@ import { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, ArrowRight, X } from 'lucide-react';
 
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const tabs: Record<string, React.ComponentType> = {
   dashboard: Dashboard,

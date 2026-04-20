@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Trash2, CheckCircle, AlertTriangle, ClipboardList, RefreshCw, StickyNote } from 'lucide-react';
 import { useAuth } from '@/lib/store';
 
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 interface SmartBin {
   _id: string;

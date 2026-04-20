@@ -28,7 +28,7 @@ const AIAssistant = () => {
     setInput('');
     
     try {
-      const assistantUrl = (import.meta as any).env?.VITE_AI_ASSISTANT_URL || 'https://ang21506-mediwaste-ai-assistant.hf.space';
+      const assistantUrl = import.meta.env.VITE_AI_ASSISTANT_URL || 'https://ang21506-mediwaste-ai-assistant.hf.space';
       const endpoint = assistantUrl.endsWith('/chat') ? assistantUrl : `${assistantUrl.replace(/\/$/, '')}/chat`;
       
       const res = await fetch(endpoint, {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Leaf, Recycle, TrendingDown } from 'lucide-react';
 
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const ESGImpact = () => {
     const [data, setData] = useState<any>(null);

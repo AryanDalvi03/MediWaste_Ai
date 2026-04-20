@@ -38,7 +38,7 @@ export const useScanStore = create<ScanState>((set) => ({
   addEntry: (entry) => set((s) => ({ history: [entry, ...s.history] })),
   setHistory: (entries) => set({ history: entries }),
   refreshFromServer: async () => {
-    const baseUrl = (import.meta as any).env?.VITE_API_URL || "http://localhost:8000";
+    const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:8000";
     try {
       const res = await fetch(`${baseUrl}/api/scans/recent?limit=50`);
       if (!res.ok) return;

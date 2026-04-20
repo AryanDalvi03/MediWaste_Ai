@@ -9,7 +9,7 @@ import {
     XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
-const apiBase = (import.meta as any).env?.VITE_API_URL || 'http://localhost:8000';
+const apiBase = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // ─── Types ──────────────────────────────────────────────────────────
 interface MonthlyData { month: string; current: number; previous: number; }
