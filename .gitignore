@@ -36,6 +36,8 @@ git_status.txt
 *.keras
 *.joblib
 *.h5
+!backend/rf_finetuned_features_classifier.joblib
+!backend/rf_finetuned_features_scaler1 (1).joblib
 
 # Dataset (too large for git)
 backend/dataset/

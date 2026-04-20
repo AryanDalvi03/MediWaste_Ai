@@ -33,8 +33,8 @@ CURRENT_FOLDER = os.path.dirname(os.path.abspath(__file__))
 def load_engine():
     global engine
     model_path = os.path.join(CURRENT_FOLDER, 'efficientnet_finetuned_model.keras')
-    scaler_path = os.path.join(CURRENT_FOLDER, 'rf_finetuned_features_scaler1.joblib')
-    classifier_path = os.path.join(CURRENT_FOLDER, 'rf_finetuned_features_classifier1.joblib')
+    scaler_path = os.path.join(CURRENT_FOLDER, 'rf_finetuned_features_scaler1 (1).joblib')
+    classifier_path = os.path.join(CURRENT_FOLDER, 'rf_finetuned_features_classifier.joblib')
 
     missing = [
         os.path.basename(f) for f in [model_path, scaler_path, classifier_path]
